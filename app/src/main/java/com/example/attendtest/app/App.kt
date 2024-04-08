@@ -7,6 +7,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.example.attendtest.data.room.RoomEvent
+import com.example.attendtest.data.room.RoomState
 import com.example.attendtest.screens.SignUpNewScreen
 import com.example.attendtest.navigation.AppRouter
 import com.example.attendtest.navigation.Screen
@@ -17,7 +19,8 @@ import com.example.attendtest.screens.TermsAndConditionsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun App(){
+fun App(state: RoomState,
+        onEvent: (RoomEvent) -> Unit){
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -34,7 +37,7 @@ fun App(){
                     LoginNewScreen()
                 }
                 is Screen.HomeNewScreen -> {
-                    HomeNewScreen()
+                    HomeNewScreen(state, onEvent)
                 }
                 is Screen.TermsAndConditionsScreen -> {
                     TermsAndConditionsScreen()

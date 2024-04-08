@@ -12,60 +12,53 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.attendtest.data.room.RoomEvent
+import com.example.attendtest.data.room.RoomState
 import com.example.attendtest.data.user.UserState
 import com.example.attendtest.data.user.UserEvent
 
 @Composable
-fun AddUserDialog(
-    state: UserState,
-    onEvent: (UserEvent) -> Unit,
+fun AddRoomDialog(
+    state: RoomState,
+    onEvent: (RoomEvent) -> Unit,
     modifier: Modifier = Modifier
 ){
     AlertDialog(
         onDismissRequest = {
-            //onEvent(UserEvent.HideDialog)
+            onEvent(RoomEvent.HideDialog)
         },
         title = {
-            Text(text = "Add contact")
+            Text(text = "Add Room")
         },
         text = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ){
                 TextField(
-                    value = state.firstName,
+                    value = state.roomName,
                     onValueChange = {
-                        onEvent(UserEvent.SetFirstName(it))
+                        onEvent(RoomEvent.SetRoomName(it))
                     },
                     placeholder = {
-                        Text(text = "First Name")
-                    }
-                )
-                TextField(
-                    value = state.lastName,
-                    onValueChange = {
-                        onEvent(UserEvent.SetLastName(it))
-                    },
-                    placeholder = {
-                        Text(text = "Last Name")
-                    }
-                )
-                TextField(
-                    value = state.email,
-                    onValueChange = {
-                        onEvent(UserEvent.SetEmail(it))
-                    },
-                    placeholder = {
-                        Text(text = "Email")
+                        Text(text = "Room Name")
                     }
                 )
                 TextField(
                     value = state.password,
                     onValueChange = {
-                        onEvent(UserEvent.SetPassword(it))
+                        onEvent(RoomEvent.SetPassword(it))
                     },
                     placeholder = {
                         Text(text = "Password")
+                    }
+                )
+                TextField(
+                    value = state.emailAdmin,
+                    onValueChange = {
+                        onEvent(RoomEvent.SetEmailAdmin(it))
+                    },
+                    placeholder = {
+                        Text(text = "EmailAdmin")
                     }
                 )
             }
@@ -76,14 +69,14 @@ fun AddUserDialog(
                 contentAlignment = Alignment.CenterEnd
             ){
                 Button(onClick = {
-                    onEvent(UserEvent.SaveUser)
+                    onEvent(RoomEvent.SaveRoom)
                 }){
                     Text(text = "Save")
                 }
             }
         },
         dismissButton = {
-            //onEvent(ContactEvent.HideDialog)
+            //onEvent(RoomEvent.HideDialog)
         },
         modifier = Modifier
 

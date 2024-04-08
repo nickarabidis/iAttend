@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.example.attendtest.ui.theme.AttendTestTheme
 import com.example.attendtest.app.App
+import com.example.attendtest.data.room.RoomViewModel
 import com.example.attendtest.data.user.UserViewModel
 import com.example.attendtest.database.DatabaseApp
 import com.example.iattend.ui.theme.IAttendTheme
@@ -29,7 +30,7 @@ class MainActivity : ComponentActivity() {
         Room.databaseBuilder(
             applicationContext,
             DatabaseApp::class.java,
-            "databaseUser.db"
+            "database.db"
         ).build()
     }
     private val viewModel by viewModels<UserViewModel>(
@@ -41,6 +42,15 @@ class MainActivity : ComponentActivity() {
             }
         }
     )
+    private val RoomViewModel by viewModels<RoomViewModel>(
+        factoryProducer = {
+            object: ViewModelProvider.Factory {
+                override fun <T: ViewModel> create(modelClass: Class<T>): T{
+                    return RoomViewModel(db.roomDao) as T
+                }
+            }
+        }
+    )
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +58,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             IAttendTheme {
                 val state by viewModel.state.collectAsState()
-                App()
+                val roomstate by RoomViewModel.state.collectAsState()
+                App(state = roomstate, onEvent = RoomViewModel::onEvent)
             }
         }
     }

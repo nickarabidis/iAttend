@@ -18,7 +18,7 @@ interface UserDao {
     @Query("SELECT firstName FROM user WHERE email = :email")
     fun getFirstName(email: String): String
 
-    @Query("SELECT password FROM user WHERE email = :email")
+    @Query("SELECT lastName FROM user WHERE email = :email")
     fun getLastName(email: String): String
 
     @Query("SELECT email FROM user WHERE email = :email")
