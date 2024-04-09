@@ -5,7 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Room(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
     val roomName: String,
     val password: String,
     val emailAdmin: String

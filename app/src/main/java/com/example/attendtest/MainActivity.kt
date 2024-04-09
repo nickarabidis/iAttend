@@ -27,6 +27,9 @@ import com.example.iattend.ui.theme.IAttendTheme
 class MainActivity : ComponentActivity() {
 
     private val db by lazy{
+        // delete current database
+        // deleteDatabaseFile("database.db")
+
         Room.databaseBuilder(
             applicationContext,
             DatabaseApp::class.java,
@@ -61,6 +64,19 @@ class MainActivity : ComponentActivity() {
                 val roomstate by RoomViewModel.state.collectAsState()
                 App(state = roomstate, onEvent = RoomViewModel::onEvent)
             }
+        }
+    }
+
+    // Function to delete a specific database file
+    private fun deleteDatabaseFile(databaseName: String) {
+        val databasePath = applicationContext.getDatabasePath(databaseName)
+        val deleted = databasePath.delete()
+        if (deleted) {
+            // File deletion successful
+            println("Database file $databaseName deleted successfully.")
+        } else {
+            // File deletion failed
+            println("Failed to delete database file $databaseName.")
         }
     }
 }

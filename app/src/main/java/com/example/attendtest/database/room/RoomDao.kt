@@ -2,7 +2,10 @@ package com.example.attendtest.database.room
 
 import androidx.room.Dao
 import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
@@ -10,10 +13,22 @@ import kotlinx.coroutines.flow.Flow
 interface RoomDao {
 
     @Upsert
-    suspend fun upsertRoom(room: Room)
+    suspend fun upsertRoom(room: Room): Long
+
+//    @Insert(onConflict = OnConflictStrategy.REPLACE)
+//    suspend fun insertRoom(room: Room): Long
+
+    @Update
+    suspend fun updateRoom(room: Room)
 
     @Delete
     suspend fun deleteRoom(room: Room)
+
+    @Query("SELECT * FROM room WHERE id = :id")
+    suspend fun getRoomFromId(id: Long): Room
+
+//    @Query("SELECT id FROM room WHERE id = :id")
+//    suspend fun getId(id: Int): Int
 
     @Query("SELECT roomName FROM room WHERE roomName = :roomName")
     fun getRoomName(roomName: String): String
@@ -24,15 +39,15 @@ interface RoomDao {
     @Query("SELECT emailAdmin FROM room WHERE roomName = :roomName")
     fun getEmailAdmin(roomName: String): String
 
-
     @Query("SELECT * FROM room ORDER BY roomName ASC")
-    fun getUsersOrderedByRoomName(): Flow<List<Room>>
+    fun getRoomsOrderedByRoomName(): Flow<List<Room>>
 
     @Query("SELECT * FROM room ORDER BY password ASC")
-    fun getUsersOrderedByPassword(): Flow<List<Room>>
+    fun getRoomsOrderedByPassword(): Flow<List<Room>>
 
     @Query("SELECT * FROM room ORDER BY emailAdmin ASC")
-    fun getUsersOrderedByEmailAdmin(): Flow<List<Room>>
+    fun getRoomsOrderedByEmailAdmin(): Flow<List<Room>>
 
-
+    @Query("SELECT * FROM room ORDER BY id ASC")
+    fun getRoomsOrderedById(): Flow<List<Room>>
 }

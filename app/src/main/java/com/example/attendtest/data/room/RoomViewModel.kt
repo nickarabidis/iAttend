@@ -1,27 +1,12 @@
 package com.example.attendtest.data.room
 
 import android.util.Log
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.attendtest.data.NavigationItem
-import com.example.attendtest.data.rules.Validator
-import com.example.attendtest.data.user.UserEvent
-import com.example.attendtest.data.user.UserState
 import com.example.attendtest.database.room.Room
 import com.example.attendtest.database.room.RoomDao
 import com.example.attendtest.database.room.roomSortType
-import com.example.attendtest.database.user.User
-import com.example.attendtest.database.user.UserDao
-import com.example.attendtest.database.user.userSortType
-import com.example.attendtest.navigation.AppRouter
-import com.example.attendtest.navigation.Screen
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,14 +15,13 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RoomViewModel (
     private val dao: RoomDao
 ) : ViewModel() {
 
-    public val TAG = RoomViewModel::class.simpleName
+    val TAG = RoomViewModel::class.simpleName
 
     var InProgress = mutableStateOf(false)
     //var loginUIState = mutableStateOf(LoginNewUIState())
@@ -50,9 +34,10 @@ class RoomViewModel (
     private val _rooms = _sortType
         .flatMapLatest { sortType ->
             when(sortType){
-                roomSortType.ROOM_NAME -> dao.getUsersOrderedByRoomName()
-                roomSortType.PASSWORD -> dao.getUsersOrderedByPassword()
-                roomSortType.EMAIL_ADMIN -> dao.getUsersOrderedByEmailAdmin()
+                roomSortType.ID -> dao.getRoomsOrderedById()
+                roomSortType.ROOM_NAME -> dao.getRoomsOrderedByRoomName()
+                roomSortType.PASSWORD -> dao.getRoomsOrderedByPassword()
+                roomSortType.EMAIL_ADMIN -> dao.getRoomsOrderedByEmailAdmin()
             }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
@@ -73,9 +58,9 @@ class RoomViewModel (
                     dao.deleteRoom(event.room)
                 }
             }
-            is RoomEvent.HideDialog -> {
+            is RoomEvent.HideAddUserDialog -> {
                 _state.update{it.copy(
-                    isAddingRoom =  false
+                    isAddingRoom = false
                 ) }
             }
 
@@ -83,6 +68,7 @@ class RoomViewModel (
                 val roomName = state.value.roomName
                 val password = state.value.password
                 val emailAdmin = state.value.emailAdmin
+                var id = state.value.id
 
                 if(roomName.isBlank() || password.isBlank() || emailAdmin.isBlank()){
                     return
@@ -91,19 +77,64 @@ class RoomViewModel (
                 val room = Room(
                     roomName = roomName,
                     password = password,
-                    emailAdmin = emailAdmin,
+                    emailAdmin = emailAdmin
                 )
                 viewModelScope.launch{
-                    dao.upsertRoom(room)
+                    id = dao.upsertRoom(room)
+//                    val id = dao.insertRoom(room)
+                    Log.d(TAG, "id: $id")
+
+
+                    _state.update { it.copy(
+                        id = id,
+                        isAddingRoom = false,
+                        roomName = "",
+                        password = "",
+                        emailAdmin = "",
+                        currentRoom = roomName
+                    ) }
+
+                    Log.d(TAG, "id: ${state.value.id}")
                 }
+
+
+            }
+
+            is RoomEvent.SaveEdits -> {
+                val newRoomName = state.value.roomName
+                val newPassword = state.value.password
+                val newEmailAdmin = state.value.emailAdmin
+                val currentId = state.value.id
+                Log.d(TAG, "new room: ${newRoomName}, new pass: ${newPassword}, new email: ${newEmailAdmin}, id: ${currentId}")
+
+                if(newRoomName.isBlank() || newPassword.isBlank() || newEmailAdmin.isBlank()){
+                    return
+                }
+
+                viewModelScope.launch {
+                    val originalRoom = dao.getRoomFromId(currentId)
+
+                    if (originalRoom != null) { // Check if originalRoom is not null
+                        val updatedRoom = originalRoom.copy(
+                            roomName = newRoomName,
+                            password = newPassword,
+                            emailAdmin = newEmailAdmin
+                        )
+
+                        dao.updateRoom(updatedRoom)
+                    } else {
+                        // Handle the case where the room with the specified ID does not exist
+                        Log.e(TAG, "Original room not found for ID: ${currentId}")
+                    }
+                }
+
                 _state.update { it.copy(
-                    isAddingRoom = false,
+                    isEditingRoom = false,
                     roomName = "",
                     password = "",
                     emailAdmin = "",
-                    currentRoom = roomName
+                    currentRoom = newRoomName
                 ) }
-
             }
 
             is RoomEvent.SetRoomName ->{
@@ -122,11 +153,25 @@ class RoomViewModel (
                 )}
             }
 
-            is RoomEvent.ShowDialog ->{
+            is RoomEvent.ShowAddUserDialog ->{
                 _state.update { it.copy(
                     isAddingRoom = true
                 )}
             }
+
+            // new!
+            is RoomEvent.ShowEditRoomDialog ->{
+                _state.update { it.copy(
+                    isEditingRoom = true
+                )}
+            }
+
+            is RoomEvent.HideEditRoomDialog ->{
+                _state.update { it.copy(
+                    isEditingRoom = false
+                )}
+            }
+
             is RoomEvent.SortRooms ->{
                 _sortType.value = event.sortType
             }
@@ -181,11 +226,11 @@ class RoomViewModel (
                 //printState()
             }
 
-
-            is RoomEvent.AddRoomButtonClicked ->{
-                addButtonRoomDatabase()
-                //signUpDatabase()
-            }
+            // unused
+//            is RoomEvent.AddRoomButtonClicked ->{
+//                addButtonRoomDatabase()
+//                //signUpDatabase()
+//            }
 
 //            is RoomEvent.PrivacyPolicyCheckBoxClicked ->{
 //                _state.value = state.value.copy(
@@ -199,37 +244,38 @@ class RoomViewModel (
         }
     }
 
-    private fun createRoomInDatabase(roomName: String, password: String, emailAdmin: String) {
+//    private fun createRoomInDatabase(roomName: String, password: String, emailAdmin: String) {
+//
+//        InProgress.value = true
+//
+//        viewModelScope.launch {
+//            onEvent(RoomEvent.SetRoomName(roomName))
+//            onEvent(RoomEvent.SetPassword(password))
+//            onEvent(RoomEvent.SetEmailAdmin(emailAdmin))
+//            onEvent(RoomEvent.SaveRoom)
+//
+//            InProgress.value = false
+//
+//            AppRouter.navigateTo(Screen.HomeNewScreen)
+//        }
+//    }
 
-        InProgress.value = true
-
-        viewModelScope.launch {
-            onEvent(RoomEvent.SetRoomName(roomName))
-            onEvent(RoomEvent.SetPassword(password))
-            onEvent(RoomEvent.SetEmailAdmin(emailAdmin))
-            onEvent(RoomEvent.SaveRoom)
-
-            InProgress.value = false
-
-            AppRouter.navigateTo(Screen.HomeNewScreen)
-        }
-    }
-
-    private fun addButtonRoomDatabase(){
-        Log.d(TAG, "Inside_AddButtonRoom")
-        //printState()
-
-        Log.d(TAG, "roomroomName = ${state.value.roomName}")
-        Log.d(TAG, "roompassword = ${state.value.password}")
-        Log.d(TAG, "roomemailAdmin = ${state.value.emailAdmin}")
-        createRoomInDatabase(
-            roomName = state.value.roomName,
-            password = state.value.password,
-            emailAdmin = state.value.emailAdmin
-        )
-
-        //validateDateWithRules()
-    }
+    // unused
+//    private fun addButtonRoomDatabase(){
+//        Log.d(TAG, "Inside_AddButtonRoom")
+//        //printState()
+//
+//        Log.d(TAG, "roomroomName = ${state.value.roomName}")
+//        Log.d(TAG, "roompassword = ${state.value.password}")
+//        Log.d(TAG, "roomemailAdmin = ${state.value.emailAdmin}")
+//        createRoomInDatabase(
+//            roomName = state.value.roomName,
+//            password = state.value.password,
+//            emailAdmin = state.value.emailAdmin
+//        )
+//
+//        //validateDateWithRules()
+//    }
 
 //    private suspend fun getEmailAndPasswordFromDatabase(email: String): Pair<String?, String?> {
 //        return withContext(Dispatchers.IO) {

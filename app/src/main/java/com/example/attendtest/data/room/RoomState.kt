@@ -4,14 +4,16 @@ import com.example.attendtest.database.room.Room
 import com.example.attendtest.database.room.roomSortType
 
 
-data class RoomState (
+data class RoomState(
     val rooms: List<Room> = emptyList(),
     val roomName: String = "",
     val password: String = "",
     val emailAdmin: String = "",
+    var id: Long = 0,
     val isAddingRoom: Boolean = false,
+    val isEditingRoom: Boolean = false,
     val currentRoom: String = "",
-    val sortType: roomSortType = roomSortType.ROOM_NAME,
+    val sortType: roomSortType = roomSortType.ID,
 
     //val privacyPolicyAccepted: Boolean = false,
 

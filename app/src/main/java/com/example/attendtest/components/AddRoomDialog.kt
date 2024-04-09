@@ -14,8 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.attendtest.data.room.RoomEvent
 import com.example.attendtest.data.room.RoomState
-import com.example.attendtest.data.user.UserState
-import com.example.attendtest.data.user.UserEvent
 
 @Composable
 fun AddRoomDialog(
@@ -25,7 +23,7 @@ fun AddRoomDialog(
 ){
     AlertDialog(
         onDismissRequest = {
-            onEvent(RoomEvent.HideDialog)
+            onEvent(RoomEvent.HideAddUserDialog)
         },
         title = {
             Text(text = "Add Room")
@@ -76,7 +74,7 @@ fun AddRoomDialog(
             }
         },
         dismissButton = {
-            //onEvent(RoomEvent.HideDialog)
+            //onEvent(RoomEvent.HideAddUserDialog)
         },
         modifier = Modifier
 

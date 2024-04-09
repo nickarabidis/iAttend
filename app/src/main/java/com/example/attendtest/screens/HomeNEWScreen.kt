@@ -1,5 +1,6 @@
 package com.example.attendtest.screens
 
+
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
@@ -19,6 +20,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -37,25 +39,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.attendtest.R
 import com.example.attendtest.components.AddRoomDialog
 import com.example.attendtest.components.AppToolbar
+import com.example.attendtest.components.EditRoomDialog
 import com.example.attendtest.components.NavigationDrawerBody
 import com.example.attendtest.components.NavigationDrawerHeader
 import com.example.attendtest.data.room.RoomEvent
 import com.example.attendtest.data.room.RoomState
-import com.example.attendtest.data.room.RoomViewModel
-import com.example.attendtest.data.user.UserEvent
-import com.example.attendtest.data.user.UserState
 import com.example.attendtest.data.user.UserViewModel
 import com.example.attendtest.database.room.roomSortType
-
-
-
 import kotlinx.coroutines.launch
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -128,7 +124,7 @@ fun HomeNewScreen(state: RoomState,
                         Scaffold(
                             floatingActionButton = {
                                 FloatingActionButton(onClick = {
-                                    onEvent(RoomEvent.ShowDialog)
+                                    onEvent(RoomEvent.ShowAddUserDialog)
                                 }){
                                     Icon(imageVector = Icons.Default.Add,
                                         contentDescription = "Add Room"
@@ -140,8 +136,11 @@ fun HomeNewScreen(state: RoomState,
                                 padding ->
 
                             Log.d(userNewViewModel.TAG,"state.isAddingRoom= ${state.isAddingRoom}")
+                            Log.d(userNewViewModel.TAG,"state.isEditingRoom= ${state.isEditingRoom}")
                             if(state.isAddingRoom){
                                 AddRoomDialog(state = state, onEvent = onEvent)
+                            } else if(state.isEditingRoom){
+                                EditRoomDialog(state = state, onEvent = onEvent)
                             }
 
                             LazyColumn(
@@ -156,7 +155,7 @@ fun HomeNewScreen(state: RoomState,
                                             .horizontalScroll(rememberScrollState()),
                                         verticalAlignment = Alignment.CenterVertically
                                     ){
-                                        roomSortType.values().forEach { sortType ->
+                                        roomSortType.entries.forEach { sortType ->
                                             Row(
                                                 modifier = Modifier
                                                     .clickable{
@@ -184,7 +183,17 @@ fun HomeNewScreen(state: RoomState,
                                                 text = "${room.roomName} ${room.password}",
                                                 fontSize = 20.sp
                                             )
-                                            Text(text = room.emailAdmin, fontSize = 12.sp)
+                                            Text(text = "admin email: " + room.emailAdmin + ",", fontSize = 12.sp)
+                                            Text(text = "room id: " + room.id, fontSize = 12.sp)
+                                        }
+                                        IconButton(onClick = {
+                                            Log.d("press edit", "hi!")
+                                            onEvent(RoomEvent.ShowEditRoomDialog)
+                                        }){
+                                            Icon(
+                                                imageVector = Icons.Default.Edit,
+                                                contentDescription = "Edit Room"
+                                            )
                                         }
                                         IconButton(onClick = {
                                             onEvent(RoomEvent.DeleteRoom(room))

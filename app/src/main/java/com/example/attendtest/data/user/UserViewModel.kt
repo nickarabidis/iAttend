@@ -69,7 +69,7 @@ class UserViewModel (
                     dao.deleteUser(event.user)
                 }
             }
-//            is UserEvent.HideDialog -> {
+//            is UserEvent.HideAddUserDialog -> {
 //                _state.update{it.copy(
 //                    isAddingUser =  false
 //                ) }
@@ -125,7 +125,7 @@ class UserViewModel (
                     password = event.password
                 )}
             }
-//            UserEvent.ShowDialog ->{
+//            UserEvent.ShowAddUserDialog ->{
 //                _state.update { it.copy(
 //                    isAddingUser = true
 //                )}
