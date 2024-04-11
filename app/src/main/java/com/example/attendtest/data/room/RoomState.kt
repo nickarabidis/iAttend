@@ -12,7 +12,7 @@ data class RoomState(
     var id: Long = 0,
     val isAddingRoom: Boolean = false,
     val isEditingRoom: Boolean = false,
-    val currentRoom: String = "",
+    val currentRoom: Room? = null,
     val sortType: roomSortType = roomSortType.ID,
 
     //val privacyPolicyAccepted: Boolean = false,

@@ -91,7 +91,7 @@ class RoomViewModel (
                         roomName = "",
                         password = "",
                         emailAdmin = "",
-                        currentRoom = roomName
+                        //currentRoom = roomName
                     ) }
 
                     Log.d(TAG, "id: ${state.value.id}")
@@ -104,7 +104,7 @@ class RoomViewModel (
                 val newRoomName = state.value.roomName
                 val newPassword = state.value.password
                 val newEmailAdmin = state.value.emailAdmin
-                val currentId = state.value.id
+                val currentId = state.value.currentRoom?.id
                 Log.d(TAG, "new room: ${newRoomName}, new pass: ${newPassword}, new email: ${newEmailAdmin}, id: ${currentId}")
 
                 if(newRoomName.isBlank() || newPassword.isBlank() || newEmailAdmin.isBlank()){
@@ -112,7 +112,7 @@ class RoomViewModel (
                 }
 
                 viewModelScope.launch {
-                    val originalRoom = dao.getRoomFromId(currentId)
+                    val originalRoom = currentId?.let { dao.getRoomFromId(it) }
 
                     if (originalRoom != null) { // Check if originalRoom is not null
                         val updatedRoom = originalRoom.copy(
@@ -133,7 +133,7 @@ class RoomViewModel (
                     roomName = "",
                     password = "",
                     emailAdmin = "",
-                    currentRoom = newRoomName
+                    //currentRoom = newRoomName
                 ) }
             }
 
@@ -162,13 +162,15 @@ class RoomViewModel (
             // new!
             is RoomEvent.ShowEditRoomDialog ->{
                 _state.update { it.copy(
-                    isEditingRoom = true
+                    isEditingRoom = true,
+                    currentRoom = event.room
                 )}
             }
 
             is RoomEvent.HideEditRoomDialog ->{
                 _state.update { it.copy(
-                    isEditingRoom = false
+                    isEditingRoom = false,
+                    currentRoom = null
                 )}
             }
 
@@ -208,9 +210,9 @@ class RoomViewModel (
                 _state.value = state.value.copy(
                     roomName = event.roomName
                 )
-                _state.value = _state.value.copy(
-                    currentRoom = event.roomName
-                )
+//                _state.value = _state.value.copy(
+//                    currentRoom = event.roomName
+//                )
                 //printState()
             }
             is RoomEvent.PasswordChanged -> {

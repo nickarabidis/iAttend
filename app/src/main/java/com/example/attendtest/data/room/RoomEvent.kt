@@ -14,7 +14,7 @@ sealed interface RoomEvent {
 
     data object ShowAddUserDialog: RoomEvent
     data object HideAddUserDialog: RoomEvent
-    data object ShowEditRoomDialog: RoomEvent
+    data class ShowEditRoomDialog(val room: Room): RoomEvent
     data object HideEditRoomDialog: RoomEvent
 
     data class SortRooms(val sortType: roomSortType): RoomEvent

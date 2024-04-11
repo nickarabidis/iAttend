@@ -188,7 +188,7 @@ fun HomeNewScreen(state: RoomState,
                                         }
                                         IconButton(onClick = {
                                             Log.d("press edit", "hi!")
-                                            onEvent(RoomEvent.ShowEditRoomDialog)
+                                            onEvent(RoomEvent.ShowEditRoomDialog(room))
                                         }){
                                             Icon(
                                                 imageVector = Icons.Default.Edit,

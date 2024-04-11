@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
         Room.databaseBuilder(
             applicationContext,
             DatabaseApp::class.java,
-            "database.db"
+            "database2.db"
         ).build()
     }
     private val viewModel by viewModels<UserViewModel>(

@@ -11,7 +11,7 @@ import com.example.attendtest.database.user.UserDao
 @Database(
 
     entities = [User::class, Room::class],
-    version = 2
+    version = 1
 )
 abstract class DatabaseApp: RoomDatabase() {
 
