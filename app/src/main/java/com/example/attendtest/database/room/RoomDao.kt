@@ -33,6 +33,9 @@ interface RoomDao {
 //    @Query("SELECT id FROM room WHERE id = :id")
 //    suspend fun getId(id: Int): Int
 
+    @Query("SELECT * FROM room WHERE emailAdmin = :emailAdmin")
+    fun getUserRooms(emailAdmin: String?): Room
+
     @Query("SELECT roomName FROM room WHERE roomName = :roomName")
     fun getRoomName(roomName: String): String
 

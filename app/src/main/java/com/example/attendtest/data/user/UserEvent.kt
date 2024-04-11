@@ -12,8 +12,8 @@ sealed interface UserEvent {
     data class SetEmail(val email: String): UserEvent
     data class SetPassword(val password: String): UserEvent
 
-//    object ShowAddUserDialog: UserEvent
-//    object HideAddUserDialog: UserEvent
+//    object ShowAddRoomDialog: UserEvent
+//    object HideAddRoomDialog: UserEvent
 
     data class SortUsers(val sortType: userSortType): UserEvent
     data class DeleteUser(val user: User): UserEvent
