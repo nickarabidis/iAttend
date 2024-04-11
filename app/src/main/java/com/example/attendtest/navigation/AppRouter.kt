@@ -5,11 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 
 sealed class Screen {
 
-    object SignUpNewScreen : Screen()
-    object LoginNewScreen : Screen()
-    object HomeNewScreen : Screen()
-    object TermsAndConditionsScreen : Screen()
-    object RoomScreen : Screen()
+    data object SignUpNewScreen : Screen()
+    data object LoginNewScreen : Screen()
+    data object HomeNewScreen : Screen()
+    data object TermsAndConditionsScreen : Screen()
+    data object RoomScreen : Screen()
 
 }
 

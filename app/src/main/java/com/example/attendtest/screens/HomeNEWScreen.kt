@@ -124,7 +124,7 @@ fun HomeNewScreen(state: RoomState,
                         Scaffold(
                             floatingActionButton = {
                                 FloatingActionButton(onClick = {
-                                    onEvent(RoomEvent.ShowAddUserDialog)
+                                    onEvent(RoomEvent.ShowAddRoomDialog(userNewViewModel.emailId))
                                 }){
                                     Icon(imageVector = Icons.Default.Add,
                                         contentDescription = "Add Room"
@@ -172,7 +172,7 @@ fun HomeNewScreen(state: RoomState,
                                         }
                                     }
                                 }
-                                items(state.rooms){ room ->
+                                items(state.rooms.filter { it.emailAdmin == userNewViewModel.emailId }){ room ->
                                     Row(
                                         modifier = Modifier.fillMaxWidth()
                                     ){

@@ -23,7 +23,7 @@ fun AddRoomDialog(
 ){
     AlertDialog(
         onDismissRequest = {
-            onEvent(RoomEvent.HideAddUserDialog)
+            onEvent(RoomEvent.HideAddRoomDialog)
         },
         title = {
             Text(text = "Add Room")
@@ -50,15 +50,16 @@ fun AddRoomDialog(
                         Text(text = "Password")
                     }
                 )
-                TextField(
-                    value = state.emailAdmin,
-                    onValueChange = {
-                        onEvent(RoomEvent.SetEmailAdmin(it))
-                    },
-                    placeholder = {
-                        Text(text = "EmailAdmin")
-                    }
-                )
+                // email admin text field (dont wanna use)
+//                TextField(
+//                    value = state.emailAdmin,
+//                    onValueChange = {
+//                        onEvent(RoomEvent.SetEmailAdmin(it))
+//                    },
+//                    placeholder = {
+//                        Text(text = "EmailAdmin")
+//                    }
+//                )
             }
         },
         confirmButton = {
@@ -74,7 +75,7 @@ fun AddRoomDialog(
             }
         },
         dismissButton = {
-            //onEvent(RoomEvent.HideAddUserDialog)
+            //onEvent(RoomEvent.HideAddRoomDialog)
         },
         modifier = Modifier
 

@@ -5,15 +5,15 @@ import com.example.attendtest.database.user.User
 import com.example.attendtest.database.user.userSortType
 
 sealed interface UserEvent {
-    object SaveUser: UserEvent
+    data object SaveUser: UserEvent
 
     data class SetFirstName(val firstName: String): UserEvent
     data class SetLastName(val lastName: String): UserEvent
     data class SetEmail(val email: String): UserEvent
     data class SetPassword(val password: String): UserEvent
 
-//    object ShowAddUserDialog: UserEvent
-//    object HideAddUserDialog: UserEvent
+//    object ShowAddRoomDialog: UserEvent
+//    object HideAddRoomDialog: UserEvent
 
     data class SortUsers(val sortType: userSortType): UserEvent
     data class DeleteUser(val user: User): UserEvent

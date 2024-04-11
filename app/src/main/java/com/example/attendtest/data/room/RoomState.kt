@@ -9,6 +9,7 @@ data class RoomState(
     val roomName: String = "",
     val password: String = "",
     val emailAdmin: String = "",
+    val emailId: String? = "",
     var id: Long = 0,
     val isAddingRoom: Boolean = false,
     val isEditingRoom: Boolean = false,

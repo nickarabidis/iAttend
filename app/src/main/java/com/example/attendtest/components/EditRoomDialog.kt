@@ -74,7 +74,7 @@ fun EditRoomDialog(
             }
         },
         dismissButton = {
-            //onEvent(RoomEvent.HideAddUserDialog)
+            //onEvent(RoomEvent.HideAddRoomDialog)
         },
         modifier = Modifier
 

@@ -23,7 +23,7 @@ fun AddUserDialog(
 ){
     AlertDialog(
         onDismissRequest = {
-            //onEvent(UserEvent.HideAddUserDialog)
+            //onEvent(UserEvent.HideAddRoomDialog)
         },
         title = {
             Text(text = "Add contact")
@@ -83,7 +83,7 @@ fun AddUserDialog(
             }
         },
         dismissButton = {
-            //onEvent(ContactEvent.HideAddUserDialog)
+            //onEvent(ContactEvent.HideAddRoomDialog)
         },
         modifier = Modifier
 

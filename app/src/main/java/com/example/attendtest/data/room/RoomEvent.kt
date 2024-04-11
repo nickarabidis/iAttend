@@ -6,14 +6,15 @@ import com.example.attendtest.database.room.roomSortType
 
 sealed interface RoomEvent {
     data object SaveRoom: RoomEvent
+
     data object SaveEdits: RoomEvent
 
     data class SetRoomName(val roomName: String): RoomEvent
     data class SetPassword(val password: String): RoomEvent
     data class SetEmailAdmin(val emailAdmin: String): RoomEvent
 
-    data object ShowAddUserDialog: RoomEvent
-    data object HideAddUserDialog: RoomEvent
+    data class ShowAddRoomDialog(val emailId: String?): RoomEvent
+    data object HideAddRoomDialog: RoomEvent
     data class ShowEditRoomDialog(val room: Room): RoomEvent
     data object HideEditRoomDialog: RoomEvent
 

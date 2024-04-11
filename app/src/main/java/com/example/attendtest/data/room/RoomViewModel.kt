@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.attendtest.data.user.UserState
 import com.example.attendtest.database.room.Room
 import com.example.attendtest.database.room.RoomDao
 import com.example.attendtest.database.room.roomSortType
@@ -29,6 +30,8 @@ class RoomViewModel (
 
     var roomState = mutableStateOf(RoomState())
 
+
+    var userState = mutableStateOf(UserState())
 
     private val _sortType = MutableStateFlow(roomSortType.ROOM_NAME)
     private val _rooms = _sortType
@@ -58,7 +61,7 @@ class RoomViewModel (
                     dao.deleteRoom(event.room)
                 }
             }
-            is RoomEvent.HideAddUserDialog -> {
+            is RoomEvent.HideAddRoomDialog -> {
                 _state.update{it.copy(
                     isAddingRoom = false
                 ) }
@@ -67,20 +70,26 @@ class RoomViewModel (
             is RoomEvent.SaveRoom -> {
                 val roomName = state.value.roomName
                 val password = state.value.password
-                val emailAdmin = state.value.emailAdmin
-                var id = state.value.id
+                val emailAdmin = state.value.emailId
+                var id: Long
 
-                if(roomName.isBlank() || password.isBlank() || emailAdmin.isBlank()){
-                    return
+                Log.d(TAG, "id: $emailAdmin")
+
+                if (emailAdmin != null) {
+                    if(roomName.isBlank() || password.isBlank() || emailAdmin.isBlank()){
+                        return
+                    }
                 }
 
-                val room = Room(
-                    roomName = roomName,
-                    password = password,
-                    emailAdmin = emailAdmin
-                )
+                val room = emailAdmin?.let {
+                    Room(
+                        roomName = roomName,
+                        password = password,
+                        emailAdmin = it
+                    )
+                }
                 viewModelScope.launch{
-                    id = dao.upsertRoom(room)
+                    id = room?.let { dao.upsertRoom(it) }!!
 //                    val id = dao.insertRoom(room)
                     Log.d(TAG, "id: $id")
 
@@ -153,9 +162,10 @@ class RoomViewModel (
                 )}
             }
 
-            is RoomEvent.ShowAddUserDialog ->{
+            is RoomEvent.ShowAddRoomDialog ->{
                 _state.update { it.copy(
-                    isAddingRoom = true
+                    isAddingRoom = true,
+                    emailId = event.emailId
                 )}
             }
 
