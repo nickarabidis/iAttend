@@ -5,7 +5,7 @@ import com.example.attendtest.database.user.User
 import com.example.attendtest.database.user.userSortType
 
 sealed interface UserEvent {
-    object SaveUser: UserEvent
+    data object SaveUser: UserEvent
 
     data class SetFirstName(val firstName: String): UserEvent
     data class SetLastName(val lastName: String): UserEvent

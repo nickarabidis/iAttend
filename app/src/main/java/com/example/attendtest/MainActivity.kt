@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
 
     private val db by lazy{
         // delete current database
-        // deleteDatabaseFile("database.db")
+        //deleteDatabaseFile("database2.db")
 
         Room.databaseBuilder(
             applicationContext,
@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
         factoryProducer = {
             object: ViewModelProvider.Factory {
                 override fun <T: ViewModel> create(modelClass: Class<T>): T{
-                    return RoomViewModel(db.roomDao) as T
+                    return RoomViewModel(db.roomDao, db.roomAndUserDao) as T
                 }
             }
         }

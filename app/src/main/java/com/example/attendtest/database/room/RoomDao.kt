@@ -24,6 +24,9 @@ interface RoomDao {
     @Delete
     suspend fun deleteRoom(room: Room)
 
+    @Query("SELECT * FROM room WHERE emailAdmin = :emailAdmin")
+    fun getUserRooms(emailAdmin: String?): Room
+
     @Query("SELECT * FROM room WHERE id = :id")
     suspend fun getRoomFromId(id: Long): Room
 

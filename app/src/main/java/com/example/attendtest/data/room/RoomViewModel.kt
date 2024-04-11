@@ -7,6 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.attendtest.database.room.Room
 import com.example.attendtest.database.room.RoomDao
 import com.example.attendtest.database.room.roomSortType
+import com.example.attendtest.database.roomAndUser.RoomAndUser
+import com.example.attendtest.database.roomAndUser.RoomAndUserDao
+import com.example.attendtest.database.roomAndUser.roomAndUserSortType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,7 +21,8 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RoomViewModel (
-    private val dao: RoomDao
+    private val dao: RoomDao,
+    private val roomAndUserDao: RoomAndUserDao
 ) : ViewModel() {
 
     val TAG = RoomViewModel::class.simpleName
@@ -29,8 +33,25 @@ class RoomViewModel (
 
     var roomState = mutableStateOf(RoomState())
 
+    //private val _sortTypeRoomsAndUsers = MutableStateFlow(roomAndUserSortType.USER_EMAIL)
 
     private val _sortType = MutableStateFlow(roomSortType.ROOM_NAME)
+
+    private val _roomAndUserSortType = MutableStateFlow(roomAndUserSortType.USER_EMAIL)
+    private val _roomAndUsers = _roomAndUserSortType
+        .flatMapLatest { sortType ->
+            when(sortType){
+                roomAndUserSortType.USER_EMAIL -> roomAndUserDao.getRoomsOrderedByUserEmail()
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+//    val stateRoomAndUsers = combine(_state, _sortType, _rooms){ state, sortType, rooms ->
+//        state.copy(
+//            roomAndUsers = rooms,
+//            sortType = sortType
+//        )
+//    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), RoomState())
+
     private val _rooms = _sortType
         .flatMapLatest { sortType ->
             when(sortType){
@@ -42,10 +63,13 @@ class RoomViewModel (
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
     val _state = MutableStateFlow(RoomState())
-    val state = combine(_state, _sortType, _rooms){ state, sortType, rooms ->
+    val state = combine(_state, _sortType, _rooms, _roomAndUserSortType, _roomAndUsers){ state, sortType, rooms, roomAndUserSortType, roomAndUsers->
         state.copy(
             rooms = rooms,
-            sortType = sortType
+            sortType = sortType,
+            roomanduserSortType = roomAndUserSortType,
+            roomAndUsers = roomAndUsers,
+
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), RoomState())
 
@@ -58,7 +82,12 @@ class RoomViewModel (
                     dao.deleteRoom(event.room)
                 }
             }
-            is RoomEvent.HideAddUserDialog -> {
+            is RoomEvent.DeleteUserFromRoom ->{
+                viewModelScope.launch {
+                    roomAndUserDao.deleteRoomAndUser(event.roomAndUser)
+                }
+            }
+            is RoomEvent.HideAddRoomDialog -> {
                 _state.update{it.copy(
                     isAddingRoom = false
                 ) }
@@ -67,20 +96,26 @@ class RoomViewModel (
             is RoomEvent.SaveRoom -> {
                 val roomName = state.value.roomName
                 val password = state.value.password
-                val emailAdmin = state.value.emailAdmin
-                var id = state.value.id
+                val emailAdmin = state.value.emailId
+                var id: Long
 
-                if(roomName.isBlank() || password.isBlank() || emailAdmin.isBlank()){
-                    return
+                Log.d(TAG, "id: $emailAdmin")
+
+                if (emailAdmin != null) {
+                    if(roomName.isBlank() || password.isBlank() || emailAdmin.isBlank()){
+                        return
+                    }
                 }
 
-                val room = Room(
-                    roomName = roomName,
-                    password = password,
-                    emailAdmin = emailAdmin
-                )
+                val room = emailAdmin?.let {
+                    Room(
+                        roomName = roomName,
+                        password = password,
+                        emailAdmin = it
+                    )
+                }
                 viewModelScope.launch{
-                    id = dao.upsertRoom(room)
+                    id = room?.let { dao.upsertRoom(it) }!!
 //                    val id = dao.insertRoom(room)
                     Log.d(TAG, "id: $id")
 
@@ -99,6 +134,7 @@ class RoomViewModel (
 
 
             }
+
 
             is RoomEvent.SaveEdits -> {
                 val newRoomName = state.value.roomName
@@ -136,6 +172,42 @@ class RoomViewModel (
                     //currentRoom = newRoomName
                 ) }
             }
+            is RoomEvent.SaveUserInRoom -> {
+                val emailOfUser = state.value.emailOfUser
+                val currentId = state.value.currentRoom?.id
+                val isPresent = state.value.isPresent
+
+                if(emailOfUser.isBlank()){
+                    return
+                }
+
+                val roomAndUser = currentId?.let {
+                    RoomAndUser(
+                        roomId = it,
+                        userEmail = emailOfUser,
+                        isPresent = isPresent
+                    )
+                }
+                viewModelScope.launch{
+                    if (roomAndUser != null) {
+                        roomAndUserDao.upsertRoomAndUser(roomAndUser)
+                    }
+//                    val id = dao.insertRoom(room)
+                   // Log.d(TAG, "id: $id")
+
+
+                    _state.update { it.copy(
+                        isAddingUserInRoom = false,
+                        emailOfUser = "",
+                        isPresent = false
+
+                    ) }
+
+                    //Log.d(TAG, "id: ${state.value.id}")
+                }
+
+
+            }
 
             is RoomEvent.SetRoomName ->{
                 _state.update { it.copy(
@@ -152,10 +224,16 @@ class RoomViewModel (
                     emailAdmin = event.emailAdmin
                 )}
             }
-
-            is RoomEvent.ShowAddUserDialog ->{
+            is RoomEvent.SetEmailOfUser ->{
                 _state.update { it.copy(
-                    isAddingRoom = true
+                    emailOfUser = event.emailOfUser
+                )}
+            }
+
+            is RoomEvent.ShowAddRoomDialog ->{
+                _state.update { it.copy(
+                    isAddingRoom = true,
+                    emailId = event.emailId
                 )}
             }
 
@@ -174,9 +252,76 @@ class RoomViewModel (
                 )}
             }
 
+            is RoomEvent.ShowAddUserInRoomDialog ->{
+                _state.update { it.copy(
+                    isAddingUserInRoom = true,
+                    currentRoom = event.room
+                )}
+            }
+
+            is RoomEvent.HideAddUserInRoomDialog ->{
+                _state.update { it.copy(
+                    isAddingUserInRoom = false,
+                    currentRoom = null
+                )}
+            }
+
+            is RoomEvent.isPresent ->{
+                _state.update { it.copy(
+                    currentRoom = event.room
+                )}
+                val userEmail = event.emailId
+                val currentRoom = state.value.currentRoom?.id
+                val isPresent = state.value.isPresent
+                Log.d(TAG, "currentRoom: ${currentRoom}, userEmail: ${userEmail}")
+
+//                if(userEmail.isBlank()){
+//                    return
+//                }
+
+                viewModelScope.launch {
+                    val originalRoomAndUser =
+                        currentRoom?.let { userEmail?.let { it1 ->
+                            roomAndUserDao.getRoomAndUserFromId(it,
+                                it1
+                            )
+                        } }
+
+                    if (originalRoomAndUser != null) { // Check if originalRoom is not null
+                        val updatedRoomAndUser = userEmail?.let {
+                            originalRoomAndUser.copy(
+                                roomId= currentRoom,
+                                userEmail= it,
+                                isPresent= true
+                            )
+                        }
+
+                        if (updatedRoomAndUser != null) {
+                            roomAndUserDao.upsertRoomAndUser(updatedRoomAndUser)
+                        }
+                    } else {
+                        // Handle the case where the room with the specified ID does not exist
+                        Log.e(TAG, "Original room not found for ID: ${currentRoom}")
+                    }
+                }
+
+                _state.update { it.copy(
+                    emailOfUser = "",
+                    isPresent = false,
+                    isDone = true,
+                    currentRoom = event.room
+
+                ) }
+            }
+
             is RoomEvent.SortRooms ->{
                 _sortType.value = event.sortType
             }
+
+            is RoomEvent.SortRoomsAndUsers ->{
+                _roomAndUserSortType.value = event.sortTypeRoomAndUser
+            }
+
 
             is RoomEvent.GetRoomName -> {
                 val key = state.value.roomName

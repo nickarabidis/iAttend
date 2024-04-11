@@ -14,6 +14,7 @@ import com.example.attendtest.navigation.AppRouter
 import com.example.attendtest.navigation.Screen
 import com.example.attendtest.screens.HomeNewScreen
 import com.example.attendtest.screens.LoginNewScreen
+import com.example.attendtest.screens.RoomScreen
 import com.example.attendtest.screens.TermsAndConditionsScreen
 
 
@@ -42,11 +43,9 @@ fun App(state: RoomState,
                 is Screen.TermsAndConditionsScreen -> {
                     TermsAndConditionsScreen()
                 }
-
-
-                Screen.RoomScreen -> TODO()
-
-
+                is Screen.RoomScreen ->{
+                    RoomScreen((currentState.value as Screen.RoomScreen).room, state, onEvent)
+                }
             }
         }
     }

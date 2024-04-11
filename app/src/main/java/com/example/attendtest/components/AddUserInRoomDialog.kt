@@ -16,49 +16,31 @@ import com.example.attendtest.data.room.RoomEvent
 import com.example.attendtest.data.room.RoomState
 
 @Composable
-fun AddRoomDialog(
+fun AddUserInRoomDialog(
     state: RoomState,
     onEvent: (RoomEvent) -> Unit,
     modifier: Modifier = Modifier
 ){
     AlertDialog(
         onDismissRequest = {
-            onEvent(RoomEvent.HideAddRoomDialog)
+            onEvent(RoomEvent.HideAddUserInRoomDialog)
         },
         title = {
-            Text(text = "Add Room")
+            Text(text = "Add User In Room")
         },
         text = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ){
                 TextField(
-                    value = state.roomName,
+                    value = state.emailOfUser,
                     onValueChange = {
-                        onEvent(RoomEvent.SetRoomName(it))
+                        onEvent(RoomEvent.SetEmailOfUser(it))
                     },
                     placeholder = {
-                        Text(text = "Room Name")
+                        Text(text = "EmailOfUser")
                     }
                 )
-                TextField(
-                    value = state.password,
-                    onValueChange = {
-                        onEvent(RoomEvent.SetPassword(it))
-                    },
-                    placeholder = {
-                        Text(text = "Password")
-                    }
-                )
-//                TextField(
-//                    value = state.emailAdmin,
-//                    onValueChange = {
-//                        onEvent(RoomEvent.SetEmailAdmin(it))
-//                    },
-//                    placeholder = {
-//                        Text(text = "EmailAdmin")
-//                    }
-//                )
             }
         },
         confirmButton = {
@@ -67,14 +49,14 @@ fun AddRoomDialog(
                 contentAlignment = Alignment.CenterEnd
             ){
                 Button(onClick = {
-                    onEvent(RoomEvent.SaveRoom)
+                    onEvent(RoomEvent.SaveUserInRoom)
                 }){
                     Text(text = "Save")
                 }
             }
         },
         dismissButton = {
-            //onEvent(RoomEvent.HideAddUserDialog)
+            //onEvent(RoomEvent.HideAddUserInRoomDialog)
         },
         modifier = Modifier
 

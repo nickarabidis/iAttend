@@ -53,6 +53,11 @@ import com.example.attendtest.data.room.RoomState
 import com.example.attendtest.data.user.UserViewModel
 import com.example.attendtest.database.room.roomSortType
 import kotlinx.coroutines.launch
+import androidx.compose.ui.res.painterResource
+import com.example.attendtest.navigation.AppRouter
+import com.example.attendtest.navigation.Screen
+import com.example.attendtest.navigation.SystemBackButtonHandler
+
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -124,7 +129,7 @@ fun HomeNewScreen(state: RoomState,
                         Scaffold(
                             floatingActionButton = {
                                 FloatingActionButton(onClick = {
-                                    onEvent(RoomEvent.ShowAddUserDialog)
+                                    onEvent(RoomEvent.ShowAddRoomDialog(userNewViewModel.emailId))
                                 }){
                                     Icon(imageVector = Icons.Default.Add,
                                         contentDescription = "Add Room"
@@ -172,24 +177,49 @@ fun HomeNewScreen(state: RoomState,
                                         }
                                     }
                                 }
-                                items(state.rooms){ room ->
+                                items(state.rooms.filter { it.emailAdmin == userNewViewModel.emailId }){ room ->
+
                                     Row(
-                                        modifier = Modifier.fillMaxWidth()
-                                    ){
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                AppRouter.navigateTo(Screen.RoomScreen(room))
+                                            }
+                                    ) {
                                         Column(
                                             modifier = Modifier.weight(1f)
-                                        ){
+                                        ) {
                                             Text(
                                                 text = "${room.roomName} ${room.password}",
                                                 fontSize = 20.sp
                                             )
-                                            Text(text = "admin email: " + room.emailAdmin + ",", fontSize = 12.sp)
+                                            Text(
+                                                text = "admin email: " + room.emailAdmin + ",",
+                                                fontSize = 12.sp
+                                            )
                                             Text(text = "room id: " + room.id, fontSize = 12.sp)
+                                        }
+                                        IconButton(onClick = {
+                                            Log.d("press attendance", "hi!")
+                                            onEvent(RoomEvent.isPresent(room, userNewViewModel.emailId))
+                                        }) {
+                                            if(state.isDone && state.currentRoom == room) {
+                                                Icon(
+                                                    painter = painterResource(R.drawable.done),
+                                                    contentDescription = "Done Attendance"
+                                                )
+                                            }else{
+                                                Icon(
+                                                    painter = painterResource(R.drawable.done_outline),
+                                                    contentDescription = "Not Done Attendance"
+                                                )
+
+                                            }
                                         }
                                         IconButton(onClick = {
                                             Log.d("press edit", "hi!")
                                             onEvent(RoomEvent.ShowEditRoomDialog(room))
-                                        }){
+                                        }) {
                                             Icon(
                                                 imageVector = Icons.Default.Edit,
                                                 contentDescription = "Edit Room"
@@ -197,13 +227,14 @@ fun HomeNewScreen(state: RoomState,
                                         }
                                         IconButton(onClick = {
                                             onEvent(RoomEvent.DeleteRoom(room))
-                                        }){
+                                        }) {
                                             Icon(
                                                 imageVector = Icons.Default.Delete,
                                                 contentDescription = "Delete Room"
                                             )
                                         }
                                     }
+
                                 }
                             }
                         }
@@ -220,6 +251,10 @@ fun HomeNewScreen(state: RoomState,
             }
         }
     )
+
+    SystemBackButtonHandler {
+        AppRouter.navigateTo(Screen.LoginNewScreen)
+    }
 
 }
 

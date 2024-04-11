@@ -1,7 +1,10 @@
 package com.example.attendtest.navigation
 
+
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.example.attendtest.database.room.Room
+
 
 sealed class Screen {
 
@@ -9,7 +12,7 @@ sealed class Screen {
     object LoginNewScreen : Screen()
     object HomeNewScreen : Screen()
     object TermsAndConditionsScreen : Screen()
-    object RoomScreen : Screen()
+    class RoomScreen(val room: Room) : Screen()
 
 }
 
