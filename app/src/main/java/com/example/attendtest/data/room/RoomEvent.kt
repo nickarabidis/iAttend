@@ -4,6 +4,7 @@ import com.example.attendtest.database.room.Room
 import com.example.attendtest.database.room.roomSortType
 import com.example.attendtest.database.roomAndUser.RoomAndUser
 import com.example.attendtest.database.roomAndUser.roomAndUserSortType
+import com.example.attendtest.database.user.User
 
 
 sealed interface RoomEvent {
@@ -28,6 +29,11 @@ sealed interface RoomEvent {
 
     data class isDone(val room: Room): RoomEvent
     data class isPresent(val room: Room, val emailId: String?): RoomEvent
+
+    data class GetRoomIdFromUserEmail(val emailId: String?, val rooms: List<Room>): RoomEvent
+
+    data class GetEmailFromRoom(val emailId: String?, val rooms: List<Room>): RoomEvent
+    //data class RoomIdFetched(val roomId: Long?) : RoomEvent
 
     //usersInRoom
     data class ShowAddUserInRoomDialog(val room: Room) : RoomEvent

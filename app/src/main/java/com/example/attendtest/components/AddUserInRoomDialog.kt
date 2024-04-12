@@ -12,14 +12,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.attendtest.data.room.RoomEvent
 import com.example.attendtest.data.room.RoomState
+import com.example.attendtest.data.user.UserViewModel
 
 @Composable
 fun AddUserInRoomDialog(
     state: RoomState,
     onEvent: (RoomEvent) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    userNewViewModel: UserViewModel = viewModel()
 ){
     AlertDialog(
         onDismissRequest = {
@@ -49,9 +52,15 @@ fun AddUserInRoomDialog(
                 contentAlignment = Alignment.CenterEnd
             ){
                 Button(onClick = {
-                    onEvent(RoomEvent.SaveUserInRoom)
+                    if(state.emailOfUser != userNewViewModel.emailId){
+                        onEvent(RoomEvent.SaveUserInRoom)
+                    }
                 }){
-                    Text(text = "Save")
+                    if(state.emailOfUser != userNewViewModel.emailId){
+                        Text(text = "Save")
+                    }else{
+                        Text(text = "Don't Save")
+                    }
                 }
             }
         },

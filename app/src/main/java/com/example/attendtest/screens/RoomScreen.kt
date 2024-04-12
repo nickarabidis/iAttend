@@ -118,7 +118,7 @@ fun RoomScreen(room: Room,
                             }
                         }
                     }
-                    items(state.roomAndUsers) { userInRoom ->
+                    items(state.roomAndUsers.filter { it.roomId == room.id }){  userInRoom ->
 
                         Row(
                             modifier = Modifier.fillMaxWidth()

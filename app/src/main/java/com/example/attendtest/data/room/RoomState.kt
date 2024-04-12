@@ -26,6 +26,8 @@ data class RoomState(
     val isPresent: Boolean = false,
     val roomAndUsers: List<RoomAndUser> = emptyList(),
     val roomanduserSortType: roomAndUserSortType = roomAndUserSortType.USER_EMAIL,
+    val currentRoomIds: List<Long> = emptyList(),
+    val currentPresentRoomIds: List<Long> = emptyList(),
 
 
     //val privacyPolicyAccepted: Boolean = false,

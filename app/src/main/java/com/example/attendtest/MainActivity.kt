@@ -28,12 +28,12 @@ class MainActivity : ComponentActivity() {
 
     private val db by lazy{
         // delete current database
-        //deleteDatabaseFile("database2.db")
+        //deleteDatabaseFile("database.db")
 
         Room.databaseBuilder(
             applicationContext,
             DatabaseApp::class.java,
-            "database2.db"
+            "database.db"
         ).build()
     }
     private val viewModel by viewModels<UserViewModel>(

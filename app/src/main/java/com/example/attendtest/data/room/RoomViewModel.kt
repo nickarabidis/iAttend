@@ -10,6 +10,7 @@ import com.example.attendtest.database.room.roomSortType
 import com.example.attendtest.database.roomAndUser.RoomAndUser
 import com.example.attendtest.database.roomAndUser.RoomAndUserDao
 import com.example.attendtest.database.roomAndUser.roomAndUserSortType
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RoomViewModel (
@@ -265,6 +267,62 @@ class RoomViewModel (
                     currentRoom = null
                 )}
             }
+
+            is RoomEvent.GetRoomIdFromUserEmail -> {
+                val userEmail = event.emailId
+                val currentRooms = event.rooms
+                viewModelScope.launch {
+                    val roomIds = mutableListOf<Long>()
+                    for (room in currentRooms) {
+                        try {
+                            val roomId = roomAndUserDao.getRoomIdFromUserEmail(userEmail, room.id)
+                            if (roomId != null) { // Check if roomId is not null
+                                roomIds.add(roomId)
+                            } else {
+                                // Handle the case where roomId is null
+                                Log.e("RoomViewModel", "RoomId is null for room: $room")
+                            }
+                        } catch (e: Exception) {
+                            // Log the error
+                            Log.e("RoomViewModel", "Error getting roomId: ${e.message}")
+                        }
+                    }
+
+                    _state.update { it.copy(
+                        currentRoomIds = roomIds
+                    )}
+                }
+            }
+
+            is RoomEvent.GetEmailFromRoom-> {
+                val userEmail = event.emailId
+                val currentRooms = event.rooms
+                viewModelScope.launch {
+                    val presentRoom = mutableListOf<Long>()
+                    for (room in currentRooms) {
+                        try {
+                            val userPresent =
+                                userEmail?.let { roomAndUserDao.getUserEmailFromRoomId(it, room.id) }
+
+                            if (userPresent == true) { // Check if roomId is not null
+                                presentRoom.add(room.id)
+                            } else {
+                                // Handle the case where roomId is null
+                                Log.e("RoomViewModel", "userPresent is false for room: $room")
+                            }
+                        } catch (e: Exception) {
+                            // Log the error
+                            Log.e("RoomViewModel", "Error getting roomId: ${e.message}")
+                        }
+                    }
+
+                    _state.update { it.copy(
+                        currentPresentRoomIds = presentRoom
+                    )}
+                }
+            }
+
+
 
             is RoomEvent.isPresent ->{
                 _state.update { it.copy(
@@ -560,5 +618,11 @@ class RoomViewModel (
 //        AppRouter.navigateTo(Screen.LoginNewScreen)
 //
 //    }
+    suspend fun getRoomIdFromUserEmail(email: String?, roomId: Long): Long {
+
+        return withContext(Dispatchers.IO) {
+            roomAndUserDao.getRoomIdFromUserEmail(email, roomId)
+        }
+    }
 
 }

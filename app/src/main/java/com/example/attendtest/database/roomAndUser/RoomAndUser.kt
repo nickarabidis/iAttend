@@ -10,8 +10,17 @@ import com.example.attendtest.database.user.User
 @Entity(
     primaryKeys = ["roomId", "userEmail"],
     foreignKeys = [
-        ForeignKey(entity = Room::class, parentColumns = ["id"], childColumns = ["roomId"]),
-        ForeignKey(entity = User::class, parentColumns = ["email"], childColumns = ["userEmail"])
+        ForeignKey(
+            entity = Room::class,
+            parentColumns = ["id"],
+            childColumns = ["roomId"],
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = User::class,
+            parentColumns = ["email"],
+            childColumns = ["userEmail"]
+        )
     ],
     indices = [
         Index(value = ["roomId"]),

@@ -29,6 +29,12 @@ interface RoomAndUserDao {
     @Query("SELECT * FROM RoomAndUser WHERE roomId = :roomId AND userEmail = :userEmail")
     suspend fun getRoomAndUserFromId(roomId: Long, userEmail: String): RoomAndUser
 
+    @Query("SELECT roomId FROM RoomAndUser WHERE userEmail = :emailAdmin AND roomId = :roomId")
+    suspend fun getRoomIdFromUserEmail(emailAdmin: String?, roomId: Long): Long
+
+    @Query("SELECT isPresent FROM RoomAndUser WHERE userEmail = :userEmail AND roomId = :roomId")
+    suspend fun getUserEmailFromRoomId(userEmail: String, roomId: Long): Boolean
+
 //    @Query("SELECT * FROM room WHERE id = :id")
 //    suspend fun getRoomFromId(id: Long): Room
 

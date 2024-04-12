@@ -2,6 +2,7 @@ package com.example.attendtest.screens
 
 
 import android.annotation.SuppressLint
+import android.nfc.Tag
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -54,6 +55,8 @@ import com.example.attendtest.data.user.UserViewModel
 import com.example.attendtest.database.room.roomSortType
 import kotlinx.coroutines.launch
 import androidx.compose.ui.res.painterResource
+import com.example.attendtest.data.room.RoomViewModel
+import com.example.attendtest.database.roomAndUser.RoomAndUserDao
 import com.example.attendtest.navigation.AppRouter
 import com.example.attendtest.navigation.Screen
 import com.example.attendtest.navigation.SystemBackButtonHandler
@@ -64,14 +67,17 @@ import com.example.attendtest.navigation.SystemBackButtonHandler
 @Composable
 fun HomeNewScreen(state: RoomState,
                   onEvent: (RoomEvent) -> Unit,
-                  userNewViewModel: UserViewModel = viewModel()){
+                  userNewViewModel: UserViewModel = viewModel(),
+                  roomNewViewModel: RoomViewModel = viewModel()){
     //val snackbarHostState  = remember { SnackbarHostState() }
     //val scope = rememberCoroutineScope()
     //val scaffoldState = rememberScaffoldState()
+    val roomAndUserDao: RoomAndUserDao
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
     userNewViewModel.getUserData()
+
 
     Log.d(userNewViewModel.TAG,"userNewViewModel.emailId= ${userNewViewModel.emailId}")
 
@@ -176,8 +182,15 @@ fun HomeNewScreen(state: RoomState,
                                             }
                                         }
                                     }
-                                }
-                                items(state.rooms.filter { it.emailAdmin == userNewViewModel.emailId }){ room ->
+                                }//&& state.emailOfUser ==
+                                onEvent(RoomEvent.GetRoomIdFromUserEmail(userNewViewModel.emailId, state.rooms))
+                                items(state.rooms.filter {room ->
+                                    val currentRoomIds = state.currentRoomIds
+                                    val emailAdminMatches = room.emailAdmin == userNewViewModel.emailId
+                                    val roomIdMatches = currentRoomIds.contains(room.id)
+                                    emailAdminMatches || roomIdMatches
+                                    //it.emailAdmin == userNewViewModel.emailId || state.currentRoomId == it.id
+                                }){ room ->
 
                                     Row(
                                         modifier = Modifier
@@ -199,23 +212,43 @@ fun HomeNewScreen(state: RoomState,
                                             )
                                             Text(text = "room id: " + room.id, fontSize = 12.sp)
                                         }
-                                        IconButton(onClick = {
-                                            Log.d("press attendance", "hi!")
-                                            onEvent(RoomEvent.isPresent(room, userNewViewModel.emailId))
-                                        }) {
-                                            if(state.isDone && state.currentRoom == room) {
-                                                Icon(
-                                                    painter = painterResource(R.drawable.done),
-                                                    contentDescription = "Done Attendance"
-                                                )
-                                            }else{
-                                                Icon(
-                                                    painter = painterResource(R.drawable.done_outline),
-                                                    contentDescription = "Not Done Attendance"
-                                                )
 
+                                        onEvent(RoomEvent.GetEmailFromRoom(userNewViewModel.emailId, state.rooms))
+
+                                        //CHECK IF ADMIN EMAIL IS THE SAME WITH USER
+                                        if (room.emailAdmin != userNewViewModel.emailId){
+                                            IconButton(onClick = {
+                                                Log.d("press attendance", "hi!")
+                                                onEvent(RoomEvent.isPresent(room, userNewViewModel.emailId))
+                                            }) {
+                                                val currentPresentRoomIds = state.currentPresentRoomIds
+                                                val roomIdPresent = currentPresentRoomIds.contains(room.id)
+                                                if (roomIdPresent){
+                                                    Icon(
+                                                        painter = painterResource(R.drawable.done),
+                                                        contentDescription = "Done Attendance"
+                                                    )
+                                                }else{
+                                                    Icon(
+                                                        painter = painterResource(R.drawable.done_outline),
+                                                        contentDescription = "Not Done Attendance"
+                                                    )
+                                                }
+//                                                if(state.isDone && state.currentRoom == room) {
+//                                                    Icon(
+//                                                        painter = painterResource(R.drawable.done),
+//                                                        contentDescription = "Done Attendance"
+//                                                    )
+//                                                }else{
+//                                                    Icon(
+//                                                        painter = painterResource(R.drawable.done_outline),
+//                                                        contentDescription = "Not Done Attendance"
+//                                                    )
+//
+//                                                }
                                             }
                                         }
+
                                         IconButton(onClick = {
                                             Log.d("press edit", "hi!")
                                             onEvent(RoomEvent.ShowEditRoomDialog(room))
