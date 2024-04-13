@@ -8,8 +8,12 @@ data class Room(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val roomName: String,
-    val password: String,
-    val emailAdmin: String
+    // password can be null
+    val password: String?,
+    val emailAdmin: String,
+    // visibility
+    val isVisible: Boolean,
+    val passwordNeeded: Boolean
 )
 //    @PrimaryKey(autoGenerate = true)
 //    val id: Int = 0

@@ -20,4 +20,16 @@
     <string name="logout">Logout</string>
     <string name="menu">Menu</string>
     <string name="navigation_header">Navigation Header</string>
+    <string name="sort">Sort by</string>
+    <string name="delete_room">Delete Room</string>
+    <string name="edit_room">Edit Room</string>
+    <string name="add_participant">Add Participant</string>
+    <string name="room_name">Room Name</string>
+    <string name="admin">Admin</string>
+    <string name="remove_participant">Remove Participant</string>
+    <string name="room_id">Room ID</string>
+    <string name="add_room">Add Room</string>
+    <string name="turn_to_visible">Turn room to Visible</string>
+    <string name="turn_to_password_needed">Turn room to Visible with Password</string>
+    <string name="turn_to_invisible">Turn room to Invisible</string>
 </resources>

@@ -1,4 +1,7 @@
 package com.example.attendtest.database.room
 
-class roomVisibilityType {
+enum class roomVisibilityType {
+    VISIBLE,
+    INVISIBLE,
+    PASSWORD,
 }

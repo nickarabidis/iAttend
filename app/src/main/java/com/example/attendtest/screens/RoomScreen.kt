@@ -8,9 +8,12 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -29,13 +32,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.attendtest.R
 import com.example.attendtest.components.AddRoomDialog
 import com.example.attendtest.components.AddUserInRoomDialog
 import com.example.attendtest.components.EditRoomDialog
+import com.example.attendtest.components.NormalTextComponent
+import com.example.attendtest.components.RoomHeaderTextComponent
 import com.example.attendtest.data.room.RoomEvent
 import com.example.attendtest.data.room.RoomState
 import com.example.attendtest.data.user.UserEvent
@@ -57,6 +67,9 @@ fun RoomScreen(room: Room,
                userNewViewModel: UserViewModel = viewModel()
 ){
 
+    // retrieve user data like: email
+    userNewViewModel.getUserData()
+
     Surface(
         color = Color.White,
         modifier = Modifier
@@ -75,7 +88,7 @@ fun RoomScreen(room: Room,
                     }) {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            contentDescription = "Add User In Room"
+                            contentDescription = stringResource(id = R.string.add_participant)
                         )
                     }
                 },
@@ -95,12 +108,26 @@ fun RoomScreen(room: Room,
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     item {
+                        Row (modifier = Modifier
+                            .fillMaxWidth()
+                        ) {
+                            RoomHeaderTextComponent(
+                                value = stringResource(id = R.string.room_name) +
+                                        ": ${room.roomName} | " +
+                                        stringResource(id = R.string.admin) +
+                                        ": ${room.emailAdmin}"
+                            )
+                        }
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .horizontalScroll(rememberScrollState()),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            Text(
+                                text = stringResource(id = R.string.sort) + ":",
+                                fontWeight = FontWeight.Bold
+                            )
                             roomAndUserSortType.entries.forEach { sortType ->
                                 Row(
                                     modifier = Modifier
@@ -121,7 +148,8 @@ fun RoomScreen(room: Room,
                     items(state.roomAndUsers.filter { it.roomId == room.id }){  userInRoom ->
 
                         Row(
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
                                 .clickable {
                                     ///AppRouter.navigateTo(Screen.RoomScreen(roomAndUsers))
                                 }
@@ -144,7 +172,7 @@ fun RoomScreen(room: Room,
                             }) {
                                 Icon(
                                     imageVector = Icons.Default.Delete,
-                                    contentDescription = "Delete Room"
+                                    contentDescription = stringResource(id = R.string.remove_participant)
                                 )
                             }
                         }

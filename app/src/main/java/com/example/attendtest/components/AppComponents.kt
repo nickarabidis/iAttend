@@ -94,6 +94,24 @@ fun NormalTextComponent(value: String){
 }
 
 @Composable
+fun RoomHeaderTextComponent(value: String){
+    Text(
+        text = value,
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .heightIn(min = 40.dp)
+            .fillMaxWidth()
+        ,
+        style = TextStyle(
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Normal,
+            fontStyle = FontStyle.Normal
+        ),
+        color = colorResource(id = R.color.colorText)
+    )
+}
+
+@Composable
 fun HeadingTextComponent(value: String){
     Text(
         text = value,

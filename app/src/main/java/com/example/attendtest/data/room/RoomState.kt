@@ -2,6 +2,7 @@ package com.example.attendtest.data.room
 
 import com.example.attendtest.database.room.Room
 import com.example.attendtest.database.room.roomSortType
+import com.example.attendtest.database.room.roomVisibilityType
 import com.example.attendtest.database.roomAndUser.RoomAndUser
 import com.example.attendtest.database.roomAndUser.roomAndUserSortType
 
@@ -19,6 +20,12 @@ data class RoomState(
     val sortType: roomSortType = roomSortType.ID,
     val isDone: Boolean = false,
 
+    // visibility
+    var isVisible: Boolean = true,
+    var visibilityType: roomVisibilityType = roomVisibilityType.VISIBLE,
+
+    // isVisible -> true
+    var passwordNeeded: Boolean = true,
 
     //usersInRooms
     val isAddingUserInRoom: Boolean = false,

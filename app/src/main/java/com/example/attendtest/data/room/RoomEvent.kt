@@ -2,6 +2,7 @@ package com.example.attendtest.data.room
 
 import com.example.attendtest.database.room.Room
 import com.example.attendtest.database.room.roomSortType
+import com.example.attendtest.database.room.roomVisibilityType
 import com.example.attendtest.database.roomAndUser.RoomAndUser
 import com.example.attendtest.database.roomAndUser.roomAndUserSortType
 import com.example.attendtest.database.user.User
@@ -17,6 +18,11 @@ sealed interface RoomEvent {
     data class SetRoomName(val roomName: String): RoomEvent
     data class SetPassword(val password: String): RoomEvent
     data class SetEmailAdmin(val emailAdmin: String): RoomEvent
+//    data class SetVisibility(val ): RoomEvent
+    data class SetIsVisible(val isVisible: Boolean): RoomEvent
+    data class SetPasswordNeeded(val passwordNeeded: Boolean): RoomEvent
+
+//    data class SetVisibleToggle(val isVisible: Boolean, val passwordNeeded: Boolean): RoomEvent
 
 
     //usersInRoom
@@ -40,6 +46,8 @@ sealed interface RoomEvent {
     data object HideAddUserInRoomDialog: RoomEvent
 
     data class SortRooms(val sortType: roomSortType): RoomEvent
+
+    data class ToggleVisibility(val visibilityType: roomVisibilityType): RoomEvent
 
     data class SortRoomsAndUsers(val sortTypeRoomAndUser: roomAndUserSortType): RoomEvent
     data class DeleteRoom(val room: Room): RoomEvent

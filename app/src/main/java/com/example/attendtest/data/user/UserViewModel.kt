@@ -384,6 +384,10 @@ class UserViewModel (
         }
     }
 
+    fun getCurrentUserEmail(): String? {
+        return emailId // Assuming emailId holds the current user's email
+    }
+
     fun logoutDatabase(){
         Log.d(TAG, "Inside sign outsuccess")
 

@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.attendtest.database.room.Room
 import com.example.attendtest.database.room.RoomDao
 import com.example.attendtest.database.room.roomSortType
+import com.example.attendtest.database.room.roomVisibilityType
 import com.example.attendtest.database.roomAndUser.RoomAndUser
 import com.example.attendtest.database.roomAndUser.RoomAndUserDao
 import com.example.attendtest.database.roomAndUser.roomAndUserSortType
@@ -38,6 +39,9 @@ class RoomViewModel (
     //private val _sortTypeRoomsAndUsers = MutableStateFlow(roomAndUserSortType.USER_EMAIL)
 
     private val _sortType = MutableStateFlow(roomSortType.ROOM_NAME)
+
+    // visibility
+    private val _visibilityType = MutableStateFlow(roomVisibilityType.VISIBLE)
 
     private val _roomAndUserSortType = MutableStateFlow(roomAndUserSortType.USER_EMAIL)
     private val _roomAndUsers = _roomAndUserSortType
@@ -113,7 +117,9 @@ class RoomViewModel (
                     Room(
                         roomName = roomName,
                         password = password,
-                        emailAdmin = it
+                        emailAdmin = it,
+                        isVisible = true,
+                        passwordNeeded = true
                     )
                 }
                 viewModelScope.launch{
@@ -141,28 +147,31 @@ class RoomViewModel (
             is RoomEvent.SaveEdits -> {
                 val newRoomName = state.value.roomName
                 val newPassword = state.value.password
-                val newEmailAdmin = state.value.emailAdmin
                 val currentId = state.value.currentRoom?.id
-                Log.d(TAG, "new room: ${newRoomName}, new pass: ${newPassword}, new email: ${newEmailAdmin}, id: ${currentId}")
+                val newPasswordNeeded = state.value.passwordNeeded
+                val newIsVisible = state.value.isVisible
+                Log.d(TAG, "new room: ${newRoomName}, new pass: ${newPassword}, id: ${currentId}")
 
-                if(newRoomName.isBlank() || newPassword.isBlank() || newEmailAdmin.isBlank()){
+                if(newRoomName.isBlank() || newPassword.isBlank()){
                     return
                 }
 
                 viewModelScope.launch {
                     val originalRoom = currentId?.let { dao.getRoomFromId(it) }
+                    Log.d("ID IS", "$currentId")
 
                     if (originalRoom != null) { // Check if originalRoom is not null
                         val updatedRoom = originalRoom.copy(
                             roomName = newRoomName,
                             password = newPassword,
-                            emailAdmin = newEmailAdmin
+                            isVisible = newIsVisible,
+                            passwordNeeded = newPasswordNeeded,
                         )
 
                         dao.updateRoom(updatedRoom)
                     } else {
                         // Handle the case where the room with the specified ID does not exist
-                        Log.e(TAG, "Original room not found for ID: ${currentId}")
+                        Log.e(TAG, "Original room not found for ID: $currentId")
                     }
                 }
 
@@ -174,6 +183,8 @@ class RoomViewModel (
                     //currentRoom = newRoomName
                 ) }
             }
+
+
             is RoomEvent.SaveUserInRoom -> {
                 val emailOfUser = state.value.emailOfUser
                 val currentId = state.value.currentRoom?.id
@@ -219,6 +230,17 @@ class RoomViewModel (
             is RoomEvent.SetPassword ->{
                 _state.update { it.copy(
                     password = event.password
+                )}
+            }
+            // visibility
+            is RoomEvent.SetIsVisible ->{
+                _state.update { it.copy(
+                    isVisible = event.isVisible
+                )}
+            }
+            is RoomEvent.SetPasswordNeeded ->{
+                _state.update { it.copy(
+                    passwordNeeded = event.passwordNeeded
                 )}
             }
             is RoomEvent.SetEmailAdmin ->{
@@ -331,7 +353,7 @@ class RoomViewModel (
                 val userEmail = event.emailId
                 val currentRoom = state.value.currentRoom?.id
                 val isPresent = state.value.isPresent
-                Log.d(TAG, "currentRoom: ${currentRoom}, userEmail: ${userEmail}")
+                Log.d(TAG, "currentRoom: ${currentRoom}, userEmail: $userEmail")
 
 //                if(userEmail.isBlank()){
 //                    return
@@ -359,7 +381,7 @@ class RoomViewModel (
                         }
                     } else {
                         // Handle the case where the room with the specified ID does not exist
-                        Log.e(TAG, "Original room not found for ID: ${currentRoom}")
+                        Log.e(TAG, "Original room not found for ID: $currentRoom")
                     }
                 }
 
@@ -372,14 +394,13 @@ class RoomViewModel (
                 ) }
             }
 
-            is RoomEvent.SortRooms ->{
+            is RoomEvent.SortRooms -> {
                 _sortType.value = event.sortType
             }
 
-            is RoomEvent.SortRoomsAndUsers ->{
+            is RoomEvent.SortRoomsAndUsers -> {
                 _roomAndUserSortType.value = event.sortTypeRoomAndUser
             }
-
 
             is RoomEvent.GetRoomName -> {
                 val key = state.value.roomName

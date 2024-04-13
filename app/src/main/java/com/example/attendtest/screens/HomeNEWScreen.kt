@@ -55,6 +55,7 @@ import com.example.attendtest.data.user.UserViewModel
 import com.example.attendtest.database.room.roomSortType
 import kotlinx.coroutines.launch
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import com.example.attendtest.data.room.RoomViewModel
 import com.example.attendtest.database.roomAndUser.RoomAndUserDao
 import com.example.attendtest.navigation.AppRouter
@@ -138,7 +139,7 @@ fun HomeNewScreen(state: RoomState,
                                     onEvent(RoomEvent.ShowAddRoomDialog(userNewViewModel.emailId))
                                 }){
                                     Icon(imageVector = Icons.Default.Add,
-                                        contentDescription = "Add Room"
+                                        contentDescription = stringResource(id = R.string.add_room)
                                     )
                                 }
                             },
@@ -166,6 +167,10 @@ fun HomeNewScreen(state: RoomState,
                                             .horizontalScroll(rememberScrollState()),
                                         verticalAlignment = Alignment.CenterVertically
                                     ){
+                                        Text(
+                                            text = stringResource(id = R.string.sort) + ":",
+                                            fontWeight = FontWeight.Bold
+                                        )
                                         roomSortType.entries.forEach { sortType ->
                                             Row(
                                                 modifier = Modifier
@@ -176,7 +181,7 @@ fun HomeNewScreen(state: RoomState,
                                             ){
                                                 RadioButton(
                                                     selected = state.sortType == sortType,
-                                                    onClick = { RoomEvent.SortRooms(sortType)}
+                                                    onClick = { RoomEvent.SortRooms(sortType) }
                                                 )
                                                 Text(text = sortType.name)
                                             }
@@ -192,48 +197,74 @@ fun HomeNewScreen(state: RoomState,
                                     //it.emailAdmin == userNewViewModel.emailId || state.currentRoomId == it.id
                                 }){ room ->
 
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .clickable {
-                                                AppRouter.navigateTo(Screen.RoomScreen(room))
-                                            }
-                                    ) {
-                                        Column(
-                                            modifier = Modifier.weight(1f)
+                                    /*
+                                        visibility check
+                                        - if user is admin, he can see the rooms either way
+                                        - if he is not then the room has to be visible
+                                    */
+                                    if (userNewViewModel.emailId == room.emailAdmin || room.isVisible) {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable {
+                                                    if (userNewViewModel.emailId == room.emailAdmin) {
+                                                        AppRouter.navigateTo(Screen.RoomScreen(room))
+                                                    }
+                                                }
                                         ) {
-                                            Text(
-                                                text = "${room.roomName} ${room.password}",
-                                                fontSize = 20.sp
-                                            )
-                                            Text(
-                                                text = "admin email: " + room.emailAdmin + ",",
-                                                fontSize = 12.sp
-                                            )
-                                            Text(text = "room id: " + room.id, fontSize = 12.sp)
-                                        }
-
-                                        onEvent(RoomEvent.GetEmailFromRoom(userNewViewModel.emailId, state.rooms))
-
-                                        //CHECK IF ADMIN EMAIL IS THE SAME WITH USER
-                                        if (room.emailAdmin != userNewViewModel.emailId){
-                                            IconButton(onClick = {
-                                                Log.d("press attendance", "hi!")
-                                                onEvent(RoomEvent.isPresent(room, userNewViewModel.emailId))
-                                            }) {
-                                                val currentPresentRoomIds = state.currentPresentRoomIds
-                                                val roomIdPresent = currentPresentRoomIds.contains(room.id)
-                                                if (roomIdPresent){
-                                                    Icon(
-                                                        painter = painterResource(R.drawable.done),
-                                                        contentDescription = "Done Attendance"
+                                            Column(
+                                                modifier = Modifier.weight(1f)
+                                            ) {
+                                                Text(
+                                                    text = "${room.roomName} ${room.password}",
+                                                    fontSize = 20.sp
+                                                )
+                                                Text(
+                                                    text = stringResource(id = R.string.admin) +
+                                                            ": " +
+                                                            room.emailAdmin +
+                                                            ",",
+                                                    fontSize = 12.sp
+                                                )
+                                                Text(
+                                                    text = stringResource(id = R.string.room_id) +
+                                                            ": " +
+                                                            room.id,
+                                                    fontSize = 12.sp
+                                                )
+                                                if (room.emailAdmin == userNewViewModel.emailId) {
+                                                    Text(
+                                                        text = "Visibility: ${room.isVisible}",
+                                                        fontSize = 20.sp
                                                     )
-                                                }else{
-                                                    Icon(
-                                                        painter = painterResource(R.drawable.done_outline),
-                                                        contentDescription = "Not Done Attendance"
+                                                    Text(
+                                                        text = "Password Needed: ${room.passwordNeeded}",
+                                                        fontSize = 20.sp
                                                     )
                                                 }
+                                            }
+
+                                            onEvent(RoomEvent.GetEmailFromRoom(userNewViewModel.emailId, state.rooms))
+
+                                            //CHECK IF ADMIN EMAIL IS THE SAME WITH USER
+                                            if (room.emailAdmin != userNewViewModel.emailId){
+                                                IconButton(onClick = {
+                                                    Log.d("press attendance", "hi!")
+                                                    onEvent(RoomEvent.isPresent(room, userNewViewModel.emailId))
+                                                }) {
+                                                    val currentPresentRoomIds = state.currentPresentRoomIds
+                                                    val roomIdPresent = currentPresentRoomIds.contains(room.id)
+                                                    if (roomIdPresent){
+                                                        Icon(
+                                                            painter = painterResource(R.drawable.done),
+                                                            contentDescription = "Done Attendance"
+                                                        )
+                                                    }else{
+                                                        Icon(
+                                                            painter = painterResource(R.drawable.done_outline),
+                                                            contentDescription = "Not Done Attendance"
+                                                        )
+                                                    }
 //                                                if(state.isDone && state.currentRoom == room) {
 //                                                    Icon(
 //                                                        painter = painterResource(R.drawable.done),
@@ -246,27 +277,33 @@ fun HomeNewScreen(state: RoomState,
 //                                                    )
 //
 //                                                }
+                                                }
+                                            }
+
+                                            if (userNewViewModel.emailId == room.emailAdmin) {
+                                                IconButton(onClick = {
+                                                    Log.d("Pressed edit", "Editing room: ${room.roomName}")
+                                                    onEvent(RoomEvent.ShowEditRoomDialog(room))
+                                                }) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Edit,
+                                                        contentDescription = stringResource(id = R.string.edit_room)
+                                                    )
+                                                }
+                                                IconButton(onClick = {
+                                                    Log.d("Pressed delete", "Deleting room: ${room.roomName}")
+                                                    onEvent(RoomEvent.DeleteRoom(room))
+                                                }) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Delete,
+                                                        contentDescription = stringResource(id = R.string.delete_room)
+                                                    )
+                                                }
                                             }
                                         }
 
-                                        IconButton(onClick = {
-                                            Log.d("press edit", "hi!")
-                                            onEvent(RoomEvent.ShowEditRoomDialog(room))
-                                        }) {
-                                            Icon(
-                                                imageVector = Icons.Default.Edit,
-                                                contentDescription = "Edit Room"
-                                            )
-                                        }
-                                        IconButton(onClick = {
-                                            onEvent(RoomEvent.DeleteRoom(room))
-                                        }) {
-                                            Icon(
-                                                imageVector = Icons.Default.Delete,
-                                                contentDescription = "Delete Room"
-                                            )
-                                        }
                                     }
+
 
                                 }
                             }

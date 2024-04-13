@@ -24,6 +24,22 @@ interface RoomDao {
     @Delete
     suspend fun deleteRoom(room: Room)
 
+    // visibility
+    @Query("SELECT passwordNeeded FROM room WHERE id = :id")
+    suspend fun getPasswordNeededFromId(id: Long): Boolean
+
+//    @Query("SELECT isVisible FROM room WHERE id = :id")
+//    suspend fun getIsVisibleFromId(id: Long): Boolean
+
+    @Query("UPDATE room SET isVisible = 1, passwordNeeded = 0 WHERE id = :id")
+    suspend fun setRoomToVisible(id: Long)
+
+    @Query("UPDATE room SET isVisible = 1, passwordNeeded = 1 WHERE id = :id")
+    suspend fun setRoomToPasswordNeeded(id: Long)
+
+    @Query("UPDATE room SET isVisible = 0 WHERE id = :id")
+    suspend fun setRoomToInvisible(id: Long)
+
     @Query("SELECT * FROM room WHERE emailAdmin = :emailAdmin")
     fun getUserRooms(emailAdmin: String?): Room
 
