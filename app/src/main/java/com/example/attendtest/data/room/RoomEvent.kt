@@ -22,6 +22,10 @@ sealed interface RoomEvent {
     data class SetIsVisible(val isVisible: Boolean): RoomEvent
     data class SetPasswordNeeded(val passwordNeeded: Boolean): RoomEvent
 
+    data class SetVisibilityType( val visibilityType: roomVisibilityType) : RoomEvent
+
+    data class GetPasswordNeededFromRoom(val room: Room) : RoomEvent
+
 //    data class SetVisibleToggle(val isVisible: Boolean, val passwordNeeded: Boolean): RoomEvent
 
 
@@ -32,6 +36,12 @@ sealed interface RoomEvent {
     data object HideAddRoomDialog: RoomEvent
     data class ShowEditRoomDialog(val room: Room): RoomEvent
     data object HideEditRoomDialog: RoomEvent
+
+    //Password Needed
+    data class ShowPasswordNeededDialog(val room: Room): RoomEvent
+    data object HidePasswordNeededDialog: RoomEvent
+    data class SetPasswordToEnter(val passwordToEnter: String): RoomEvent
+    data object CheckPassword: RoomEvent
 
     data class isDone(val room: Room): RoomEvent
     data class isPresent(val room: Room, val emailId: String?): RoomEvent

@@ -21,11 +21,14 @@ data class RoomState(
     val isDone: Boolean = false,
 
     // visibility
-    var isVisible: Boolean = true,
+    var isVisible: Boolean = false,
     var visibilityType: roomVisibilityType = roomVisibilityType.VISIBLE,
 
     // isVisible -> true
-    var passwordNeeded: Boolean = true,
+    val isPasswordNeeded: Boolean = false,
+    var passwordNeeded: Boolean = false,
+    var passwordToEnter: String = "",
+    var validPassword: Boolean = false,
 
     //usersInRooms
     val isAddingUserInRoom: Boolean = false,

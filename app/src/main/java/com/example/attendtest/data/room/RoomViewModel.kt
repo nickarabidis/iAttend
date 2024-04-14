@@ -1,5 +1,6 @@
 package com.example.attendtest.data.room
 
+import android.nfc.Tag
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -104,6 +105,8 @@ class RoomViewModel (
                 val password = state.value.password
                 val emailAdmin = state.value.emailId
                 var id: Long
+                val isVisible = state.value.isVisible
+                val passwordNeeded = state.value.passwordNeeded
 
                 Log.d(TAG, "id: $emailAdmin")
 
@@ -118,8 +121,8 @@ class RoomViewModel (
                         roomName = roomName,
                         password = password,
                         emailAdmin = it,
-                        isVisible = true,
-                        passwordNeeded = true
+                        isVisible = isVisible,
+                        passwordNeeded = passwordNeeded
                     )
                 }
                 viewModelScope.launch{
@@ -134,6 +137,8 @@ class RoomViewModel (
                         roomName = "",
                         password = "",
                         emailAdmin = "",
+                        //isVisible = false,
+                        //passwordNeeded = false
                         //currentRoom = roomName
                     ) }
 
@@ -150,7 +155,7 @@ class RoomViewModel (
                 val currentId = state.value.currentRoom?.id
                 val newPasswordNeeded = state.value.passwordNeeded
                 val newIsVisible = state.value.isVisible
-                Log.d(TAG, "new room: ${newRoomName}, new pass: ${newPassword}, id: ${currentId}")
+                Log.d(TAG, "new room: ${newRoomName}, new pass: ${newPassword}, id: ${currentId}, vis: $newIsVisible, passNeeded: $newPasswordNeeded")
 
                 if(newRoomName.isBlank() || newPassword.isBlank()){
                     return
@@ -181,6 +186,9 @@ class RoomViewModel (
                     password = "",
                     emailAdmin = "",
                     //currentRoom = newRoomName
+                    validPassword = false,
+                    passwordToEnter = "",
+                    //passwordNeeded = false
                 ) }
             }
 
@@ -243,6 +251,31 @@ class RoomViewModel (
                     passwordNeeded = event.passwordNeeded
                 )}
             }
+            is RoomEvent.SetVisibilityType ->{
+                _state.update { it.copy(
+                    visibilityType = event.visibilityType
+                )}
+            }
+            is RoomEvent.SetPasswordToEnter ->{
+                _state.update { it.copy(
+                    passwordToEnter = event.passwordToEnter
+                )}
+            }
+
+            is RoomEvent.CheckPassword ->{
+                val currentRoomPassword = state.value.currentRoom?.password
+                if (state.value.passwordToEnter == currentRoomPassword){
+                    _state.update { it.copy(
+                        validPassword = true,
+                        isPasswordNeeded = false,
+                    )}
+                }else{
+                    _state.update { it.copy(
+                        validPassword = false
+                    )}
+                }
+            }
+
             is RoomEvent.SetEmailAdmin ->{
                 _state.update { it.copy(
                     emailAdmin = event.emailAdmin
@@ -286,6 +319,19 @@ class RoomViewModel (
             is RoomEvent.HideAddUserInRoomDialog ->{
                 _state.update { it.copy(
                     isAddingUserInRoom = false,
+                    currentRoom = null
+                )}
+            }
+            //passwordNeeded Dialog
+            is RoomEvent.ShowPasswordNeededDialog ->{
+                _state.update { it.copy(
+                    isPasswordNeeded = true,
+                    currentRoom = event.room
+                )}
+            }
+            is RoomEvent.HidePasswordNeededDialog ->{
+                _state.update { it.copy(
+                    isPasswordNeeded = false,
                     currentRoom = null
                 )}
             }
@@ -343,6 +389,19 @@ class RoomViewModel (
                     )}
                 }
             }
+            is RoomEvent.GetPasswordNeededFromRoom ->{
+                _state.update { it.copy(
+                    currentRoom = event.room
+                )}
+                val currentRoomId = state.value.currentRoom?.id
+                Log.d(TAG, "View currentRoomId = ${currentRoomId}")
+                viewModelScope.launch {
+                    val passwordNeeded = currentRoomId?.let { dao.getPasswordNeededFromRoomId(it) }
+                    Log.d(TAG, "View passwordNeeded = ${passwordNeeded}")
+
+                    _state.update { passwordNeeded?.let { it1 -> it.copy(passwordNeeded = it1) }!! }
+                }
+            }
 
 
 
@@ -389,7 +448,10 @@ class RoomViewModel (
                     emailOfUser = "",
                     isPresent = false,
                     isDone = true,
-                    currentRoom = event.room
+                    currentRoom = event.room,
+                    validPassword = false,
+                    passwordToEnter = "",
+                    passwordNeeded = false
 
                 ) }
             }
@@ -644,6 +706,36 @@ class RoomViewModel (
         return withContext(Dispatchers.IO) {
             roomAndUserDao.getRoomIdFromUserEmail(email, roomId)
         }
+    }
+
+
+
+    suspend fun getPasswordNeededFromRoom(room: Room): Boolean? {
+        _state.update { it.copy(
+            currentRoom = room
+        )}
+        val currentRoomId = state.value.currentRoom?.id
+        Log.d(TAG, "View currentRoomId = ${currentRoomId}")
+
+        val passwordNeeded = currentRoomId?.let { dao.getPasswordNeededFromRoomId(it) }
+        Log.d(TAG, "View passwordNeeded = ${passwordNeeded}")
+
+        return passwordNeeded
+
+    }
+
+    suspend fun getPresentNeededFromRoom(room: Room): Boolean? {
+        _state.update { it.copy(
+            currentRoom = room
+        )}
+        val currentRoomId = state.value.currentRoom?.id
+        Log.d(TAG, "View currentRoomId = ${currentRoomId}")
+
+        val presentNeeded = currentRoomId?.let { roomAndUserDao.getPresentNeededFromRoomId(it) }
+        Log.d(TAG, "View passwordNeeded = ${presentNeeded}")
+
+        return presentNeeded
+
     }
 
 }

@@ -46,6 +46,12 @@ interface RoomDao {
     @Query("SELECT * FROM room WHERE id = :id")
     suspend fun getRoomFromId(id: Long): Room
 
+    @Query("SELECT passwordNeeded FROM Room WHERE id = :roomId")
+    suspend fun getPasswordNeededFromRoomId(roomId: Long): Boolean
+
+
+
+
 //    @Query("SELECT id FROM room WHERE id = :id")
 //    suspend fun getId(id: Int): Int
 

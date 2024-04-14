@@ -56,6 +56,7 @@ import com.example.attendtest.database.room.roomSortType
 import kotlinx.coroutines.launch
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import com.example.attendtest.components.PasswordNeededDialog
 import com.example.attendtest.data.room.RoomViewModel
 import com.example.attendtest.database.roomAndUser.RoomAndUserDao
 import com.example.attendtest.navigation.AppRouter
@@ -149,10 +150,13 @@ fun HomeNewScreen(state: RoomState,
 
                             Log.d(userNewViewModel.TAG,"state.isAddingRoom= ${state.isAddingRoom}")
                             Log.d(userNewViewModel.TAG,"state.isEditingRoom= ${state.isEditingRoom}")
+                            Log.d(userNewViewModel.TAG,"state.isEditingRoom= ${state.isPasswordNeeded}")
                             if(state.isAddingRoom){
                                 AddRoomDialog(state = state, onEvent = onEvent)
                             } else if(state.isEditingRoom){
                                 EditRoomDialog(state = state, onEvent = onEvent)
+                            } else if(state.isPasswordNeeded){
+                                PasswordNeededDialog(state = state, onEvent = onEvent)
                             }
 
                             LazyColumn(
@@ -250,7 +254,28 @@ fun HomeNewScreen(state: RoomState,
                                             if (room.emailAdmin != userNewViewModel.emailId){
                                                 IconButton(onClick = {
                                                     Log.d("press attendance", "hi!")
-                                                    onEvent(RoomEvent.isPresent(room, userNewViewModel.emailId))
+                                                    scope.launch {
+                                                        Log.d(roomNewViewModel.TAG,"Home room.id:  ${room.id}")
+
+                                                        val presentNeeded = roomNewViewModel.getPresentNeededFromRoom(room)
+                                                        val passwordNeeded = roomNewViewModel.getPasswordNeededFromRoom(room)
+
+                                                        //onEvent(RoomEvent.GetPasswordNeededFromRoom(room))
+                                                        Log.d(roomNewViewModel.TAG,"Home presentNeeded:  ${presentNeeded}")
+                                                        Log.d(roomNewViewModel.TAG,"Home passwordNeeded:  ${passwordNeeded}")
+                                                        if (presentNeeded == false){
+                                                            if (passwordNeeded == true){
+                                                                Log.d(roomNewViewModel.TAG,"Home if passwordNeeded:  ${passwordNeeded}")
+                                                                onEvent(RoomEvent.ShowPasswordNeededDialog(room))
+                                                                if(state.validPassword){
+                                                                    onEvent(RoomEvent.isPresent(room, userNewViewModel.emailId))
+                                                                }
+                                                            }else{
+                                                                Log.d(userNewViewModel.TAG,"Home else passwordNeeded:  ${passwordNeeded}")
+                                                                onEvent(RoomEvent.isPresent(room, userNewViewModel.emailId))
+                                                            }
+                                                        }
+                                                    }
                                                 }) {
                                                     val currentPresentRoomIds = state.currentPresentRoomIds
                                                     val roomIdPresent = currentPresentRoomIds.contains(room.id)

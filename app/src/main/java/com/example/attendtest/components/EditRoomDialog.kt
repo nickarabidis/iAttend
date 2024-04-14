@@ -105,6 +105,30 @@ fun EditRoomDialog(
                                     .clickable{
                                         when (visibilityType) {
                                             roomVisibilityType.VISIBLE -> {
+                                                onEvent(RoomEvent.SetVisibilityType(visibilityType))
+                                                onEvent(RoomEvent.SetIsVisible(true))
+                                                onEvent(RoomEvent.SetPasswordNeeded(false))
+                                            }
+                                            roomVisibilityType.INVISIBLE -> {
+                                                onEvent(RoomEvent.SetVisibilityType(visibilityType))
+                                                onEvent(RoomEvent.SetIsVisible(false))
+                                                onEvent(RoomEvent.SetPasswordNeeded(false))
+                                            }
+                                            roomVisibilityType.PASSWORD -> {
+                                                onEvent(RoomEvent.SetVisibilityType(visibilityType))
+                                                onEvent(RoomEvent.SetIsVisible(true))
+                                                onEvent(RoomEvent.SetPasswordNeeded(true))
+                                            }
+                                        }
+                                    },
+                                    verticalArrangement = Arrangement.Center
+                            ){
+                                RadioButton(
+                                    selected = state.visibilityType == visibilityType,
+                                    onClick = {
+                                        onEvent(RoomEvent.SetVisibilityType(visibilityType))
+                                        when (visibilityType) {
+                                            roomVisibilityType.VISIBLE -> {
                                                 onEvent(RoomEvent.SetIsVisible(true))
                                                 onEvent(RoomEvent.SetPasswordNeeded(false))
                                             }
@@ -117,13 +141,6 @@ fun EditRoomDialog(
                                                 onEvent(RoomEvent.SetPasswordNeeded(true))
                                             }
                                         }
-                                    },
-                                    verticalArrangement = Arrangement.Center
-                            ){
-                                RadioButton(
-                                    selected = state.visibilityType == visibilityType,
-                                    onClick = {
-
                                     }
                                 )
                                 val visibilityTypeIcon = when (visibilityType.name) {
