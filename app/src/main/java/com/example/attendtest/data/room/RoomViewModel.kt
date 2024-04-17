@@ -12,6 +12,7 @@ import com.example.attendtest.database.room.roomVisibilityType
 import com.example.attendtest.database.roomAndUser.RoomAndUser
 import com.example.attendtest.database.roomAndUser.RoomAndUserDao
 import com.example.attendtest.database.roomAndUser.roomAndUserSortType
+import com.example.attendtest.database.user.UserDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +27,8 @@ import kotlinx.coroutines.withContext
 @OptIn(ExperimentalCoroutinesApi::class)
 class RoomViewModel (
     private val dao: RoomDao,
-    private val roomAndUserDao: RoomAndUserDao
+    private val roomAndUserDao: RoomAndUserDao,
+    private val userDao: UserDao
 ) : ViewModel() {
 
     val TAG = RoomViewModel::class.simpleName
@@ -193,41 +195,83 @@ class RoomViewModel (
             }
 
 
+//            is RoomEvent.SaveUserInRoom -> {
+//                val emailOfUser = state.value.emailOfUser
+//                val currentId = state.value.currentRoom?.id
+//                val isPresent = state.value.isPresent
+//
+//                if(emailOfUser.isBlank()){
+//                    return
+//                }
+//
+//                val roomAndUser = currentId?.let {
+//                    RoomAndUser(
+//                        roomId = it,
+//                        userEmail = emailOfUser,
+//                        isPresent = isPresent
+//                    )
+//                }
+//                viewModelScope.launch{
+//                    if (roomAndUser != null) {
+//                        roomAndUserDao.upsertRoomAndUser(roomAndUser)
+//                    }
+////                    val id = dao.insertRoom(room)
+//                   // Log.d(TAG, "id: $id")
+//
+//
+//                    _state.update { it.copy(
+//                        isAddingUserInRoom = false,
+//                        emailOfUser = "",
+//                        isPresent = false
+//
+//                    ) }
+//
+//                    //Log.d(TAG, "id: ${state.value.id}")
+//                }
+//            }
+
             is RoomEvent.SaveUserInRoom -> {
                 val emailOfUser = state.value.emailOfUser
                 val currentId = state.value.currentRoom?.id
                 val isPresent = state.value.isPresent
 
-                if(emailOfUser.isBlank()){
+                if (emailOfUser.isBlank()) {
+                    // Handle empty email case, maybe by throwing an exception or setting an error state
                     return
                 }
 
-                val roomAndUser = currentId?.let {
-                    RoomAndUser(
-                        roomId = it,
-                        userEmail = emailOfUser,
-                        isPresent = isPresent
-                    )
-                }
-                viewModelScope.launch{
-                    if (roomAndUser != null) {
-                        roomAndUserDao.upsertRoomAndUser(roomAndUser)
+                viewModelScope.launch {
+                    // Perform the database operation in a background thread
+                    withContext(Dispatchers.IO) {
+                        // Check if the email exists in the user table
+                        val email = userDao.getEmail(emailOfUser)
+
+                        if (email == null) {
+                            // Handle case where email doesn't exist in the user table
+                            // Maybe by throwing an exception or setting an error state
+                            Log.d(TAG, "Not valid email")
+                            return@withContext
+                        } else {
+                            // Email exists, proceed with saving roomAndUser
+                            val roomAndUser = RoomAndUser(
+                                roomId = currentId ?: return@withContext, // Return if currentId is null
+                                userEmail = emailOfUser,
+                                isPresent = isPresent
+                            )
+                            // Proceed with saving roomAndUser
+                            roomAndUserDao.upsertRoomAndUser(roomAndUser)
+
+                            // Update state on the main thread
+                            withContext(Dispatchers.Main) {
+                                _state.update { it.copy(
+                                    isAddingUserInRoom = false,
+                                    emailOfUser = "",
+                                    isPresent = false
+                                ) }
+                            }
+                        }
                     }
-//                    val id = dao.insertRoom(room)
-                   // Log.d(TAG, "id: $id")
-
-
-                    _state.update { it.copy(
-                        isAddingUserInRoom = false,
-                        emailOfUser = "",
-                        isPresent = false
-
-                    ) }
-
-                    //Log.d(TAG, "id: ${state.value.id}")
                 }
-
-
             }
 
             is RoomEvent.SetRoomName ->{
