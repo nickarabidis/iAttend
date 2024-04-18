@@ -5,6 +5,7 @@ import com.example.attendtest.database.room.roomSortType
 import com.example.attendtest.database.room.roomVisibilityType
 import com.example.attendtest.database.roomAndUser.RoomAndUser
 import com.example.attendtest.database.roomAndUser.roomAndUserSortType
+import java.util.Date
 
 
 data class RoomState(
@@ -34,6 +35,7 @@ data class RoomState(
     val isAddingUserInRoom: Boolean = false,
     val emailOfUser: String = "",
     val isPresent: Boolean = false,
+    val presentDate: Date? = null,
     val roomAndUsers: List<RoomAndUser> = emptyList(),
     val roomanduserSortType: roomAndUserSortType = roomAndUserSortType.USER_EMAIL,
     val currentRoomIds: List<Long> = emptyList(),

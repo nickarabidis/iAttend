@@ -41,7 +41,7 @@ sealed interface RoomEvent {
     data class ShowPasswordNeededDialog(val room: Room): RoomEvent
     data object HidePasswordNeededDialog: RoomEvent
     data class SetPasswordToEnter(val passwordToEnter: String): RoomEvent
-    data object CheckPassword: RoomEvent
+    data class CheckPassword(val emailId: String?): RoomEvent
 
     data class isDone(val room: Room): RoomEvent
     data class isPresent(val room: Room, val emailId: String?): RoomEvent

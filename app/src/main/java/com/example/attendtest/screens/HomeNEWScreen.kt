@@ -267,9 +267,6 @@ fun HomeNewScreen(state: RoomState,
                                                             if (passwordNeeded == true){
                                                                 Log.d(roomNewViewModel.TAG,"Home if passwordNeeded:  ${passwordNeeded}")
                                                                 onEvent(RoomEvent.ShowPasswordNeededDialog(room))
-                                                                if(state.validPassword){
-                                                                    onEvent(RoomEvent.isPresent(room, userNewViewModel.emailId))
-                                                                }
                                                             }else{
                                                                 Log.d(userNewViewModel.TAG,"Home else passwordNeeded:  ${passwordNeeded}")
                                                                 onEvent(RoomEvent.isPresent(room, userNewViewModel.emailId))

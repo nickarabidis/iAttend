@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RoomViewModel (
@@ -234,6 +235,7 @@ class RoomViewModel (
                 val emailOfUser = state.value.emailOfUser
                 val currentId = state.value.currentRoom?.id
                 val isPresent = state.value.isPresent
+                val presentDate = null
 
                 if (emailOfUser.isBlank()) {
                     // Handle empty email case, maybe by throwing an exception or setting an error state
@@ -256,7 +258,8 @@ class RoomViewModel (
                             val roomAndUser = RoomAndUser(
                                 roomId = currentId ?: return@withContext, // Return if currentId is null
                                 userEmail = emailOfUser,
-                                isPresent = isPresent
+                                isPresent = isPresent,
+                                presentDate = presentDate
                             )
                             // Proceed with saving roomAndUser
                             roomAndUserDao.upsertRoomAndUser(roomAndUser)
@@ -266,7 +269,8 @@ class RoomViewModel (
                                 _state.update { it.copy(
                                     isAddingUserInRoom = false,
                                     emailOfUser = "",
-                                    isPresent = false
+                                    isPresent = false,
+                                    presentDate = null
                                 ) }
                             }
                         }
@@ -309,15 +313,63 @@ class RoomViewModel (
             is RoomEvent.CheckPassword ->{
                 val currentRoomPassword = state.value.currentRoom?.password
                 if (state.value.passwordToEnter == currentRoomPassword){
+                    Log.d(TAG, "in checkPassword")
+
+
+                    val userEmail = event.emailId
+                    val currentRoom = state.value.currentRoom?.id
+                    val isPresent = state.value.isPresent
+                    Log.d(TAG, "currentRoom: ${currentRoom}, userEmail: $userEmail")
+
+
+                    viewModelScope.launch {
+                        val originalRoomAndUser =
+                            currentRoom?.let {
+                                userEmail?.let { it1 ->
+                                    roomAndUserDao.getRoomAndUserFromId(
+                                        it,
+                                        it1
+                                    )
+                                }
+                            }
+
+                        if (originalRoomAndUser != null) { // Check if originalRoom is not null
+                            val updatedRoomAndUser = userEmail?.let {
+                                originalRoomAndUser.copy(
+                                    roomId = currentRoom,
+                                    userEmail = it,
+                                    isPresent = true,
+                                    presentDate = Date()
+                                )
+                            }
+
+                            if (updatedRoomAndUser != null) {
+                                roomAndUserDao.upsertRoomAndUser(updatedRoomAndUser)
+                            }
+                        } else {
+                            // Handle the case where the room with the specified ID does not exist
+                            Log.e(TAG, "Original room not found for ID: $currentRoom")
+                        }
+
+                    }
+
                     _state.update { it.copy(
-                        validPassword = true,
+                        //validPassword = true,
                         isPasswordNeeded = false,
+                        emailOfUser = "",
+                        isPresent = false,
+                        isDone = true,
+                        validPassword = false,
+                        passwordToEnter = "",
+                        passwordNeeded = false,
+                        presentDate = null
                     )}
                 }else{
                     _state.update { it.copy(
                         validPassword = false
                     )}
                 }
+
             }
 
             is RoomEvent.SetEmailAdmin ->{
@@ -475,7 +527,8 @@ class RoomViewModel (
                             originalRoomAndUser.copy(
                                 roomId= currentRoom,
                                 userEmail= it,
-                                isPresent= true
+                                isPresent= true,
+                                presentDate = Date()
                             )
                         }
 
@@ -495,7 +548,8 @@ class RoomViewModel (
                     currentRoom = event.room,
                     validPassword = false,
                     passwordToEnter = "",
-                    passwordNeeded = false
+                    passwordNeeded = false,
+                    presentDate = null
 
                 ) }
             }
@@ -782,4 +836,21 @@ class RoomViewModel (
 
     }
 
-}
+    suspend fun CheckPassword(): Boolean {
+        val currentRoomPassword = state.value.currentRoom?.password
+        if (state.value.passwordToEnter == currentRoomPassword) {
+            _state.update { it.copy(
+                validPassword = true,
+                isPasswordNeeded = false,
+            )}
+            return true
+        }else{
+            _state.update { it.copy(
+                    validPassword = false
+            )}
+            return false
+        }
+
+        }
+    }
+

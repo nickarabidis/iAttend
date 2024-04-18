@@ -32,8 +32,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
@@ -57,6 +61,8 @@ import com.example.attendtest.database.user.userSortType
 import com.example.attendtest.navigation.AppRouter
 import com.example.attendtest.navigation.Screen
 import com.example.attendtest.navigation.SystemBackButtonHandler
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -157,10 +163,55 @@ fun RoomScreen(room: Room,
                             Column(
                                 modifier = Modifier.weight(1f)
                             ) {
+                                val dateFormat = SimpleDateFormat("MMM dd HH:mm", Locale.getDefault())
+                                val presentDateString = userInRoom.presentDate?.let { dateFormat.format(it) } ?: ""
                                 Text(
-                                    text = "${userInRoom.userEmail + ", " + userInRoom.isPresent}",
+                                    text = buildAnnotatedString {
+                                        append(userInRoom.userEmail)
+                                        if (userInRoom.isPresent == true) {
+                                            // Append a space
+                                            append(" ")
+                                            // Append the icon
+                                            withStyle(style = SpanStyle(fontSize = 28.sp)) {
+                                                append("✓") // Use the desired Unicode character for your checkmark
+                                            }
+                                            withStyle(style = SpanStyle(fontSize = 20.sp)) {
+                                                append (" ")
+                                                append (presentDateString)
+                                            }
+                                        }else{
+                                            // Append a space
+                                            append(" ")
+                                            // Append the icon
+                                            withStyle(style = SpanStyle(fontSize = 28.sp)) {
+                                                append("✗") // Use the desired Unicode character for your checkmark
+                                            }
+                                        }
+                                    },
                                     fontSize = 20.sp
                                 )
+
+
+//                                if (userInRoom.isPresent == true){
+////                                    Icon(
+////                                        painter = painterResource(R.drawable.done),
+////                                        contentDescription = "Done Attendance"
+////                                    )
+//                                    Log.d(userNewViewModel.TAG,"$userInRoom.presentDate")
+//                                    Text(
+//                                        text = "${presentDateString}",
+//                                        fontSize = 16.sp
+//                                    )
+//                                }else{
+////                                    Icon(
+////                                        painter = painterResource(R.drawable.done_outline),
+////                                        contentDescription = "Not Done Attendance"
+////                                    )
+//                                }
+//                                Text(
+//                                    text = "${userInRoom.userEmail + ", " + userInRoom.isPresent + ", " + userInRoom.presentDate}",
+//                                    fontSize = 20.sp
+//                                )
 //                                Text(
 //                                    text = "admin email: " + room.emailAdmin + ",",
 //                                    fontSize = 12.sp
