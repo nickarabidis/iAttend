@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
 
     private val db by lazy{
         // delete current database
-       //deleteDatabaseFile("database.db")
+        // deleteDatabaseFile("database.db")
 
         Room.databaseBuilder(
             applicationContext,

@@ -6,7 +6,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.attendtest.data.NavigationItem
@@ -372,20 +371,24 @@ class UserViewModel (
 
     //var emailId: MutableLiveData<String> = MutableLiveData()
     var emailId: String? = null
+//    var firstName: String = ""
+//    var lastName: String = ""
     fun getUserData(){
         viewModelScope.launch(Dispatchers.IO) {
             val emailKey = _state.value.currentUser
+//            val firstNameKey = _state.value.currentUser
+//            val lastNameKey = _state.value.currentUser
             Log.d(TAG, "emailKey= $emailKey")
             emailId = dao.getEmail(emailKey)
+//            firstName = dao.getFirstName(firstNameKey)
+//            lastName = dao.getLastName(lastNameKey)
             //onEvent(UserEvent.GetEmail(emailKey))
 
             //val emailId = _state.value.email
             Log.d(TAG, "emailId= $emailId")
+//            Log.d(TAG, "emailId= $firstName")
+//            Log.d(TAG, "emailId= $lastName")
         }
-    }
-
-    fun getCurrentUserEmail(): String? {
-        return emailId // Assuming emailId holds the current user's email
     }
 
     fun logoutDatabase(){

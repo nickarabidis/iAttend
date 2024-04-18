@@ -14,8 +14,8 @@ data class UserState (
     val currentUser: String = "",
     val sortType: userSortType = userSortType.FIRST_NAME,
 
-//    var firstName: String = "",
-//    var lastName: String = "",
+//    var userFirstName: String = "",
+//    var userLastName: String = "",
 //    var email: String = "",
 //    var password: String = "",
     val privacyPolicyAccepted: Boolean = false,

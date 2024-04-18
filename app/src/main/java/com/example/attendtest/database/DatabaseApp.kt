@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.attendtest.database.room.Room
 import com.example.attendtest.database.room.RoomDao
+import com.example.attendtest.database.roomAndFavorites.RoomAndFavorites
 import com.example.attendtest.database.roomAndUser.Converters
 import com.example.attendtest.database.roomAndUser.RoomAndUser
 import com.example.attendtest.database.roomAndUser.RoomAndUserDao
@@ -13,7 +14,7 @@ import com.example.attendtest.database.user.UserDao
 
 
 @Database(
-    entities = [User::class, Room::class, RoomAndUser::class],
+    entities = [User::class, Room::class, RoomAndUser::class, RoomAndFavorites::class],
     version = 1
 )
 @TypeConverters(Converters::class)

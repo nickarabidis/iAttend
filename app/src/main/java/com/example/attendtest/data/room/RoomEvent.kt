@@ -1,11 +1,10 @@
 package com.example.attendtest.data.room
 
 import com.example.attendtest.database.room.Room
-import com.example.attendtest.database.room.roomSortType
-import com.example.attendtest.database.room.roomVisibilityType
+import com.example.attendtest.database.room.RoomSortType
+import com.example.attendtest.database.room.RoomVisibilityType
 import com.example.attendtest.database.roomAndUser.RoomAndUser
-import com.example.attendtest.database.roomAndUser.roomAndUserSortType
-import com.example.attendtest.database.user.User
+import com.example.attendtest.database.roomAndUser.RoomAndUserSortType
 
 
 sealed interface RoomEvent {
@@ -22,12 +21,17 @@ sealed interface RoomEvent {
     data class SetIsVisible(val isVisible: Boolean): RoomEvent
     data class SetPasswordNeeded(val passwordNeeded: Boolean): RoomEvent
 
-    data class SetVisibilityType( val visibilityType: roomVisibilityType) : RoomEvent
+    data class SetVisibilityType( val visibilityType: RoomVisibilityType) : RoomEvent
 
     data class GetPasswordNeededFromRoom(val room: Room) : RoomEvent
 
 //    data class SetVisibleToggle(val isVisible: Boolean, val passwordNeeded: Boolean): RoomEvent
 
+    data class GetFirstName(val userEmail: String): RoomEvent
+
+    data class GetLastName(val userEmail: String): RoomEvent
+
+    data class FavoriteRoom(val room: Room) : RoomEvent
 
     //usersInRoom
     data class SetEmailOfUser(val emailOfUser: String): RoomEvent
@@ -55,11 +59,11 @@ sealed interface RoomEvent {
     data class ShowAddUserInRoomDialog(val room: Room) : RoomEvent
     data object HideAddUserInRoomDialog: RoomEvent
 
-    data class SortRooms(val sortType: roomSortType): RoomEvent
+    data class SortRooms(val sortType: RoomSortType): RoomEvent
 
-    data class ToggleVisibility(val visibilityType: roomVisibilityType): RoomEvent
+    data class ToggleVisibility(val visibilityType: RoomVisibilityType): RoomEvent
 
-    data class SortRoomsAndUsers(val sortTypeRoomAndUser: roomAndUserSortType): RoomEvent
+    data class SortRoomsAndUsers(val sortTypeRoomAndUser: RoomAndUserSortType): RoomEvent
     data class DeleteRoom(val room: Room): RoomEvent
 
     data class DeleteUserFromRoom(val roomAndUser: RoomAndUser): RoomEvent

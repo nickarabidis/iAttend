@@ -44,6 +44,8 @@ interface RoomAndUserDao {
     @Query("SELECT * FROM RoomAndUser ORDER BY userEmail ASC")
     fun getRoomsOrderedByUserEmail(): Flow<List<RoomAndUser>>
 
+    @Query("SELECT * FROM RoomAndUser ORDER BY isPresent DESC")
+    fun getRoomsOrderedByAttendance(): Flow<List<RoomAndUser>>
 
     @Query("SELECT isPresent FROM RoomAndUser WHERE roomId = :roomId AND userEmail = :userEmail")
     fun getIsPresent(roomId: Long, userEmail: String): Boolean

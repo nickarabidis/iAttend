@@ -1,12 +1,11 @@
-package com.example.attendtest.database.roomAndUser
+package com.example.attendtest.database.roomAndFavorites
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
-import androidx.room.TypeConverter
+import androidx.room.PrimaryKey
 import com.example.attendtest.database.room.Room
 import com.example.attendtest.database.user.User
-import java.util.Date
 
 @Entity(
     primaryKeys = ["roomId", "userEmail"],
@@ -28,24 +27,8 @@ import java.util.Date
         Index(value = ["userEmail"])
     ]
 )
-data class RoomAndUser(
+data class RoomAndFavorites (
     val roomId: Long,
     val userEmail: String,
-    val isPresent: Boolean,
-    val presentDate: Date? = null
+    val isFavorite: Boolean
 )
-
-class Converters {
-    @TypeConverter
-    fun fromTimestamp(value: Long?): Date? {
-        return value?.let { Date(it) }
-    }
-
-    @TypeConverter
-    fun dateToTimestamp(date: Date?): Long? {
-        return date?.time
-    }
-}
-
-//    @PrimaryKey(autoGenerate = true)
-//    val id: Int = 0

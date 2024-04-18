@@ -1,8 +1,8 @@
 package com.example.attendtest.database.room
 
-enum class roomSortType {
-    ROOM_NAME,
-    PASSWORD,
-    EMAIL_ADMIN,
+enum class RoomSortType {
     ID,
+    ROOM_NAME,
+    EMAIL_ADMIN,
+    FAVORITES
 }

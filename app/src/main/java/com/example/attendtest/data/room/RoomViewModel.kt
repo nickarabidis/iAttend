@@ -1,17 +1,18 @@
 package com.example.attendtest.data.room
 
-import android.nfc.Tag
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.attendtest.database.room.Room
 import com.example.attendtest.database.room.RoomDao
-import com.example.attendtest.database.room.roomSortType
-import com.example.attendtest.database.room.roomVisibilityType
+import com.example.attendtest.database.room.RoomSortType
+import com.example.attendtest.database.room.RoomVisibilityType
+import com.example.attendtest.database.roomAndFavorites.RoomAndFavorites
+import com.example.attendtest.database.roomAndFavorites.RoomAndFavoritesDao
 import com.example.attendtest.database.roomAndUser.RoomAndUser
 import com.example.attendtest.database.roomAndUser.RoomAndUserDao
-import com.example.attendtest.database.roomAndUser.roomAndUserSortType
+import com.example.attendtest.database.roomAndUser.RoomAndUserSortType
 import com.example.attendtest.database.user.UserDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,7 +30,8 @@ import java.util.Date
 class RoomViewModel (
     private val dao: RoomDao,
     private val roomAndUserDao: RoomAndUserDao,
-    private val userDao: UserDao
+    private val userDao: UserDao,
+//    private val roomAndFavoritesDao: RoomAndFavoritesDao
 ) : ViewModel() {
 
     val TAG = RoomViewModel::class.simpleName
@@ -40,18 +42,19 @@ class RoomViewModel (
 
     var roomState = mutableStateOf(RoomState())
 
-    //private val _sortTypeRoomsAndUsers = MutableStateFlow(roomAndUserSortType.USER_EMAIL)
+    //private val _sortTypeRoomsAndUsers = MutableStateFlow(RoomAndUserSortType.USER_EMAIL)
 
-    private val _sortType = MutableStateFlow(roomSortType.ROOM_NAME)
+    private val _sortType = MutableStateFlow(RoomSortType.ID)
 
     // visibility
-    private val _visibilityType = MutableStateFlow(roomVisibilityType.VISIBLE)
+    private val _visibilityType = MutableStateFlow(RoomVisibilityType.VISIBLE)
 
-    private val _roomAndUserSortType = MutableStateFlow(roomAndUserSortType.USER_EMAIL)
+    private val _roomAndUserSortType = MutableStateFlow(RoomAndUserSortType.USER_EMAIL)
     private val _roomAndUsers = _roomAndUserSortType
         .flatMapLatest { sortType ->
             when(sortType){
-                roomAndUserSortType.USER_EMAIL -> roomAndUserDao.getRoomsOrderedByUserEmail()
+                RoomAndUserSortType.USER_EMAIL -> roomAndUserDao.getRoomsOrderedByUserEmail()
+                RoomAndUserSortType.IS_PRESENT -> roomAndUserDao.getRoomsOrderedByAttendance()
             }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
@@ -65,10 +68,11 @@ class RoomViewModel (
     private val _rooms = _sortType
         .flatMapLatest { sortType ->
             when(sortType){
-                roomSortType.ID -> dao.getRoomsOrderedById()
-                roomSortType.ROOM_NAME -> dao.getRoomsOrderedByRoomName()
-                roomSortType.PASSWORD -> dao.getRoomsOrderedByPassword()
-                roomSortType.EMAIL_ADMIN -> dao.getRoomsOrderedByEmailAdmin()
+                RoomSortType.ID -> dao.getRoomsOrderedById()
+                RoomSortType.ROOM_NAME -> dao.getRoomsOrderedByRoomName()
+                // RoomSortType.PASSWORD -> dao.getRoomsOrderedByPassword()
+                RoomSortType.EMAIL_ADMIN -> dao.getRoomsOrderedByEmailAdmin()
+                RoomSortType.FAVORITES -> dao.getRoomsOrderedByFavorites()
             }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
@@ -231,6 +235,40 @@ class RoomViewModel (
 //                }
 //            }
 
+//            is RoomEvent.FavoriteRoom -> {
+//                val currentId = state.value.currentRoom?.id
+//
+//                viewModelScope.launch {
+//                    // Perform the database operation in a background thread
+//                    withContext(Dispatchers.IO) {
+//                        // Check if the email exists in the user table
+//
+//
+//                        if (currentId?.let { roomAndFavoritesDao.isRoomFavorite(it) } == null) {
+//                            // Email exists, proceed with saving roomAndUser
+//                            val roomAndFavorites = RoomAndFavorites(
+//                                roomId = currentId ?: return@withContext, // Return if currentId is null
+//                                isFavorite = when (roomAndFavorites)
+//                            )
+//                            // Proceed with saving roomAndUser
+//                            roomAndUserDao.upsertRoomAndUser(roomAndUser)
+//
+//                            // Update state on the main thread
+//                            withContext(Dispatchers.Main) {
+//                                _state.update { it.copy(
+//                                    isAddingUserInRoom = false,
+//                                    emailOfUser = "",
+//                                    isPresent = false,
+//                                    presentDate = null
+//                                ) }
+//                            }
+//                        } else {
+//
+//                        }
+//                    }
+//                }
+//            }
+
             is RoomEvent.SaveUserInRoom -> {
                 val emailOfUser = state.value.emailOfUser
                 val currentId = state.value.currentRoom?.id
@@ -259,7 +297,7 @@ class RoomViewModel (
                                 roomId = currentId ?: return@withContext, // Return if currentId is null
                                 userEmail = emailOfUser,
                                 isPresent = isPresent,
-                                presentDate = presentDate
+                                presentDate = null
                             )
                             // Proceed with saving roomAndUser
                             roomAndUserDao.upsertRoomAndUser(roomAndUser)
@@ -381,6 +419,74 @@ class RoomViewModel (
                 _state.update { it.copy(
                     emailOfUser = event.emailOfUser
                 )}
+            }
+
+            is RoomEvent.GetFirstName -> {
+                val emailOfUser = event.userEmail
+                Log.d(TAG, "emailOfUser: $emailOfUser")
+
+                if (emailOfUser.isBlank()) {
+                    // Handle empty email case, maybe by throwing an exception or setting an error state
+                    return
+                }
+
+                viewModelScope.launch {
+                    // Perform the database operation in a background thread
+                    withContext(Dispatchers.IO) {
+                        // Check if the email exists in the user table
+                        val fName = userDao.getFirstName(emailOfUser)
+                        Log.d(TAG, "fName: $fName")
+
+                        if (emailOfUser == null) {
+                            // Handle case where email doesn't exist in the user table
+                            // Maybe by throwing an exception or setting an error state
+                            Log.d(TAG, "Not valid email")
+                            return@withContext
+                        } else {
+
+
+                            // Update state on the main thread
+                            withContext(Dispatchers.Main) {
+                                _state.update { it.copy(
+                                    userFirstName = fName
+                                ) }
+                            }
+                        }
+                    }
+                }
+            }
+
+            is RoomEvent.GetLastName -> {
+                val emailOfUser = event.userEmail
+
+                if (emailOfUser.isBlank()) {
+                    // Handle empty email case, maybe by throwing an exception or setting an error state
+                    return
+                }
+
+                viewModelScope.launch {
+                    // Perform the database operation in a background thread
+                    withContext(Dispatchers.IO) {
+                        // Check if the email exists in the user table
+                        val lName = userDao.getLastName(emailOfUser)
+
+                        if (emailOfUser == null) {
+                            // Handle case where email doesn't exist in the user table
+                            // Maybe by throwing an exception or setting an error state
+                            Log.d(TAG, "Not valid email")
+                            return@withContext
+                        } else {
+
+
+                            // Update state on the main thread
+                            withContext(Dispatchers.Main) {
+                                _state.update { it.copy(
+                                    userLastName = lName
+                                ) }
+                            }
+                        }
+                    }
+                }
             }
 
             is RoomEvent.ShowAddRoomDialog ->{
@@ -715,10 +821,10 @@ class RoomViewModel (
 //
 //    private fun validateDateWithRules(){
 //        val firstNameResult = Validator.validateFirstName(
-//            firstName = state.value.firstName
+//            userFirstName = state.value.userFirstName
 //        )
 //        val lastNameResult = Validator.validateLastName(
-//            lastName = state.value.lastName
+//            userLastName = state.value.userLastName
 //        )
 //        val emailResult = Validator.validateEmail(
 //            email = state.value.email
@@ -834,6 +940,18 @@ class RoomViewModel (
 
         return presentNeeded
 
+    }
+
+    suspend fun getFirstName(userEmail: String): String {
+        return withContext(Dispatchers.IO) {
+            userDao.getFirstName(userEmail)
+        }
+    }
+
+    suspend fun getLastName(userEmail: String): String {
+        return withContext(Dispatchers.IO) {
+            userDao.getLastName(userEmail)
+        }
     }
 
     suspend fun CheckPassword(): Boolean {

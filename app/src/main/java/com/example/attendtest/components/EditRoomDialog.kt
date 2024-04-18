@@ -17,10 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 // see
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 // see
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.example.attendtest.R
 import com.example.attendtest.data.room.RoomEvent
 import com.example.attendtest.data.room.RoomState
-import com.example.attendtest.database.room.roomVisibilityType
+import com.example.attendtest.database.room.RoomVisibilityType
 
 @Composable
 fun EditRoomDialog(
@@ -99,22 +95,22 @@ fun EditRoomDialog(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        roomVisibilityType.entries.forEach { visibilityType ->
+                        RoomVisibilityType.entries.forEach { visibilityType ->
                             Column(
                                 modifier = Modifier
                                     .clickable{
                                         when (visibilityType) {
-                                            roomVisibilityType.VISIBLE -> {
+                                            RoomVisibilityType.VISIBLE -> {
                                                 onEvent(RoomEvent.SetVisibilityType(visibilityType))
                                                 onEvent(RoomEvent.SetIsVisible(true))
                                                 onEvent(RoomEvent.SetPasswordNeeded(false))
                                             }
-                                            roomVisibilityType.INVISIBLE -> {
+                                            RoomVisibilityType.INVISIBLE -> {
                                                 onEvent(RoomEvent.SetVisibilityType(visibilityType))
                                                 onEvent(RoomEvent.SetIsVisible(false))
                                                 onEvent(RoomEvent.SetPasswordNeeded(false))
                                             }
-                                            roomVisibilityType.PASSWORD -> {
+                                            RoomVisibilityType.PASSWORD -> {
                                                 onEvent(RoomEvent.SetVisibilityType(visibilityType))
                                                 onEvent(RoomEvent.SetIsVisible(true))
                                                 onEvent(RoomEvent.SetPasswordNeeded(true))
@@ -128,15 +124,15 @@ fun EditRoomDialog(
                                     onClick = {
                                         onEvent(RoomEvent.SetVisibilityType(visibilityType))
                                         when (visibilityType) {
-                                            roomVisibilityType.VISIBLE -> {
+                                            RoomVisibilityType.VISIBLE -> {
                                                 onEvent(RoomEvent.SetIsVisible(true))
                                                 onEvent(RoomEvent.SetPasswordNeeded(false))
                                             }
-                                            roomVisibilityType.INVISIBLE -> {
+                                            RoomVisibilityType.INVISIBLE -> {
                                                 onEvent(RoomEvent.SetIsVisible(false))
                                                 onEvent(RoomEvent.SetPasswordNeeded(false))
                                             }
-                                            roomVisibilityType.PASSWORD -> {
+                                            RoomVisibilityType.PASSWORD -> {
                                                 onEvent(RoomEvent.SetIsVisible(true))
                                                 onEvent(RoomEvent.SetPasswordNeeded(true))
                                             }
@@ -144,18 +140,18 @@ fun EditRoomDialog(
                                     }
                                 )
                                 val visibilityTypeIcon = when (visibilityType.name) {
-                                    roomVisibilityType.VISIBLE.toString() -> R.drawable.visibility
-                                    roomVisibilityType.PASSWORD.toString() -> R.drawable.visibility_lock
-                                    roomVisibilityType.INVISIBLE.toString() -> R.drawable.visibility_off
+                                    RoomVisibilityType.VISIBLE.toString() -> R.drawable.visibility
+                                    RoomVisibilityType.PASSWORD.toString() -> R.drawable.visibility_lock
+                                    RoomVisibilityType.INVISIBLE.toString() -> R.drawable.visibility_off
                                     else -> {
                                         Log.e("Icon Type error: ", "can't find visibilityType")
                                     }
                                 }
 
                                 val visibilityTypeDesc = when (visibilityType.name) {
-                                    roomVisibilityType.VISIBLE.toString() -> R.string.turn_to_visible
-                                    roomVisibilityType.PASSWORD.toString() -> R.string.turn_to_password_needed
-                                    roomVisibilityType.INVISIBLE.toString() -> R.string.turn_to_invisible
+                                    RoomVisibilityType.VISIBLE.toString() -> R.string.turn_to_visible
+                                    RoomVisibilityType.PASSWORD.toString() -> R.string.turn_to_password_needed
+                                    RoomVisibilityType.INVISIBLE.toString() -> R.string.turn_to_invisible
                                     else -> {
                                         Log.e("Icon Description error: ", "can't find visibilityType")
                                     }

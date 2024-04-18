@@ -2,7 +2,6 @@ package com.example.attendtest.screens
 
 
 import android.annotation.SuppressLint
-import android.nfc.Tag
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -52,7 +52,7 @@ import com.example.attendtest.components.NavigationDrawerHeader
 import com.example.attendtest.data.room.RoomEvent
 import com.example.attendtest.data.room.RoomState
 import com.example.attendtest.data.user.UserViewModel
-import com.example.attendtest.database.room.roomSortType
+import com.example.attendtest.database.room.RoomSortType
 import kotlinx.coroutines.launch
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -70,7 +70,8 @@ import com.example.attendtest.navigation.SystemBackButtonHandler
 fun HomeNewScreen(state: RoomState,
                   onEvent: (RoomEvent) -> Unit,
                   userNewViewModel: UserViewModel = viewModel(),
-                  roomNewViewModel: RoomViewModel = viewModel()){
+                  roomNewViewModel: RoomViewModel = viewModel()
+){
     //val snackbarHostState  = remember { SnackbarHostState() }
     //val scope = rememberCoroutineScope()
     //val scaffoldState = rememberScaffoldState()
@@ -175,7 +176,7 @@ fun HomeNewScreen(state: RoomState,
                                             text = stringResource(id = R.string.sort) + ":",
                                             fontWeight = FontWeight.Bold
                                         )
-                                        roomSortType.entries.forEach { sortType ->
+                                        RoomSortType.entries.forEach { sortType ->
                                             Row(
                                                 modifier = Modifier
                                                     .clickable{
@@ -185,9 +186,20 @@ fun HomeNewScreen(state: RoomState,
                                             ){
                                                 RadioButton(
                                                     selected = state.sortType == sortType,
-                                                    onClick = { RoomEvent.SortRooms(sortType) }
+                                                    onClick = { onEvent(RoomEvent.SortRooms(sortType)) }
                                                 )
-                                                Text(text = sortType.name)
+
+                                                // Custom sort names
+                                                val sortText = when (sortType.name) {
+                                                    RoomSortType.ID.toString() -> stringResource(id = R.string.sort_id)
+                                                    RoomSortType.ROOM_NAME.toString() -> stringResource(id = R.string.sort_room_name)
+                                                    RoomSortType.EMAIL_ADMIN.toString() -> stringResource(id = R.string.sort_email_admin)
+                                                    RoomSortType.FAVORITES.toString() -> stringResource(id = R.string.sort_favorites)
+
+                                                    // RoomSortType.PASSWORD.toString() -> "Test"
+                                                    else -> {"Can't find asked sortType"}
+                                                }
+                                                Text(text = sortText)
                                             }
                                         }
                                     }
@@ -220,8 +232,8 @@ fun HomeNewScreen(state: RoomState,
                                                 modifier = Modifier.weight(1f)
                                             ) {
                                                 Text(
-                                                    text = "${room.roomName} ${room.password}",
-                                                    fontSize = 20.sp
+                                                    text = room.roomName,
+                                                    fontSize = 22.sp
                                                 )
                                                 Text(
                                                     text = stringResource(id = R.string.admin) +
@@ -236,19 +248,36 @@ fun HomeNewScreen(state: RoomState,
                                                             room.id,
                                                     fontSize = 12.sp
                                                 )
-                                                if (room.emailAdmin == userNewViewModel.emailId) {
-                                                    Text(
-                                                        text = "Visibility: ${room.isVisible}",
-                                                        fontSize = 20.sp
-                                                    )
-                                                    Text(
-                                                        text = "Password Needed: ${room.passwordNeeded}",
-                                                        fontSize = 20.sp
-                                                    )
-                                                }
+                                                // Visibility info for admin
+//                                                if (room.emailAdmin == userNewViewModel.emailId) {
+//                                                    Text(
+//                                                        text = "Visibility: ${room.isVisible}",
+//                                                        fontSize = 20.sp
+//                                                    )
+//                                                    Text(
+//                                                        text = "Password Needed: ${room.passwordNeeded}",
+//                                                        fontSize = 20.sp
+//                                                    )
+//                                                }
                                             }
 
                                             onEvent(RoomEvent.GetEmailFromRoom(userNewViewModel.emailId, state.rooms))
+
+                                            //                                            when (room.id) {
+//
+//                                            }
+//                                            if (room.id == ) {
+//
+//                                            }
+                                            IconButton(onClick = {
+                                                Log.d("Pressed favorite", "Favorite room: ${room.roomName}")
+                                                onEvent(RoomEvent.FavoriteRoom(room))
+                                            }) {
+                                                Icon(
+                                                    imageVector = Icons.Default.FavoriteBorder,
+                                                    contentDescription = stringResource(id = R.string.add_favorites)
+                                                )
+                                            }
 
                                             //CHECK IF ADMIN EMAIL IS THE SAME WITH USER
                                             if (room.emailAdmin != userNewViewModel.emailId){
@@ -322,6 +351,7 @@ fun HomeNewScreen(state: RoomState,
                                                     )
                                                 }
                                             }
+
                                         }
 
                                     }

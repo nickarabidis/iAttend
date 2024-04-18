@@ -1,10 +1,10 @@
 package com.example.attendtest.data.room
 
 import com.example.attendtest.database.room.Room
-import com.example.attendtest.database.room.roomSortType
-import com.example.attendtest.database.room.roomVisibilityType
+import com.example.attendtest.database.room.RoomSortType
+import com.example.attendtest.database.room.RoomVisibilityType
 import com.example.attendtest.database.roomAndUser.RoomAndUser
-import com.example.attendtest.database.roomAndUser.roomAndUserSortType
+import com.example.attendtest.database.roomAndUser.RoomAndUserSortType
 import java.util.Date
 
 
@@ -18,12 +18,12 @@ data class RoomState(
     val isAddingRoom: Boolean = false,
     val isEditingRoom: Boolean = false,
     val currentRoom: Room? = null,
-    val sortType: roomSortType = roomSortType.ID,
+    val sortType: RoomSortType = RoomSortType.ID,
     val isDone: Boolean = false,
 
     // visibility
-    var isVisible: Boolean = false,
-    var visibilityType: roomVisibilityType = roomVisibilityType.VISIBLE,
+    var isVisible: Boolean = true,
+    var visibilityType: RoomVisibilityType = RoomVisibilityType.VISIBLE,
 
     // isVisible -> true
     val isPasswordNeeded: Boolean = false,
@@ -35,9 +35,11 @@ data class RoomState(
     val isAddingUserInRoom: Boolean = false,
     val emailOfUser: String = "",
     val isPresent: Boolean = false,
+    val userFirstName: String = "",
+    val userLastName: String = "",
     val presentDate: Date? = null,
     val roomAndUsers: List<RoomAndUser> = emptyList(),
-    val roomanduserSortType: roomAndUserSortType = roomAndUserSortType.USER_EMAIL,
+    val roomanduserSortType: RoomAndUserSortType = RoomAndUserSortType.USER_EMAIL,
     val currentRoomIds: List<Long> = emptyList(),
     val currentPresentRoomIds: List<Long> = emptyList(),
 
