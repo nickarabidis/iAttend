@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
         factoryProducer = {
             object: ViewModelProvider.Factory {
                 override fun <T: ViewModel> create(modelClass: Class<T>): T{
-                    return RoomViewModel(db.roomDao, db.roomAndUserDao, db.userDao) as T
+                    return RoomViewModel(db.roomDao, db.roomAndUserDao, db.userDao, db.roomAndFavoritesDao) as T
                 }
             }
         }

@@ -77,7 +77,7 @@ interface RoomDao {
     fun getRoomsOrderedByEmailAdmin(): Flow<List<Room>>
 
     // TODO
-    @Query("SELECT * FROM room, roomandfavorites WHERE id = roomId ORDER BY isFavorite ASC")
+    @Query("SELECT * FROM room, roomandfavorites WHERE id = roomId ORDER BY isFavorite DESC, id ASC")
     fun getRoomsOrderedByFavorites(): Flow<List<Room>>
 
     @Query("SELECT * FROM room ORDER BY id ASC")

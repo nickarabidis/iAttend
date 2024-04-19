@@ -3,6 +3,7 @@ package com.example.attendtest.data.room
 import com.example.attendtest.database.room.Room
 import com.example.attendtest.database.room.RoomSortType
 import com.example.attendtest.database.room.RoomVisibilityType
+import com.example.attendtest.database.roomAndFavorites.RoomAndFavorites
 import com.example.attendtest.database.roomAndUser.RoomAndUser
 import com.example.attendtest.database.roomAndUser.RoomAndUserSortType
 
@@ -10,6 +11,12 @@ import com.example.attendtest.database.roomAndUser.RoomAndUserSortType
 sealed interface RoomEvent {
     data object SaveRoom: RoomEvent
     data object SaveEdits: RoomEvent
+
+    data class FavoriteRoom(val room: Room, val userEmail: String?): RoomEvent
+
+    data class UnfavoriteRoom(val room: Room, val userEmail: String?): RoomEvent
+
+    data class IsRoomFavorite(val id: Long, val userEmail: String?): RoomEvent
 
     //UserInRoom
     data object SaveUserInRoom: RoomEvent
@@ -31,8 +38,6 @@ sealed interface RoomEvent {
 
     data class GetLastName(val userEmail: String): RoomEvent
 
-    data class FavoriteRoom(val room: Room) : RoomEvent
-
     //usersInRoom
     data class SetEmailOfUser(val emailOfUser: String): RoomEvent
 
@@ -51,6 +56,8 @@ sealed interface RoomEvent {
     data class isPresent(val room: Room, val emailId: String?): RoomEvent
 
     data class GetRoomIdFromUserEmail(val emailId: String?, val rooms: List<Room>): RoomEvent
+
+    data class GetFavoriteRoomIdFromUserEmail(val emailId: String?, val rooms: List<Room>): RoomEvent
 
     data class GetEmailFromRoom(val emailId: String?, val rooms: List<Room>): RoomEvent
     //data class RoomIdFetched(val roomId: Long?) : RoomEvent

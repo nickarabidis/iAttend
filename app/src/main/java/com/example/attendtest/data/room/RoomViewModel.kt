@@ -1,5 +1,6 @@
 package com.example.attendtest.data.room
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -18,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
@@ -31,7 +33,7 @@ class RoomViewModel (
     private val dao: RoomDao,
     private val roomAndUserDao: RoomAndUserDao,
     private val userDao: UserDao,
-//    private val roomAndFavoritesDao: RoomAndFavoritesDao
+    private val roomAndFavoritesDao: RoomAndFavoritesDao
 ) : ViewModel() {
 
     val TAG = RoomViewModel::class.simpleName
@@ -45,6 +47,11 @@ class RoomViewModel (
     //private val _sortTypeRoomsAndUsers = MutableStateFlow(RoomAndUserSortType.USER_EMAIL)
 
     private val _sortType = MutableStateFlow(RoomSortType.ID)
+
+    private val _favoriteRoomIds = MutableStateFlow<List<Long>>(emptyList())
+    val favoriteRoomIds: StateFlow<List<Long>> = _favoriteRoomIds
+
+//    private val context = application.applicationContext
 
     // visibility
     private val _visibilityType = MutableStateFlow(RoomVisibilityType.VISIBLE)
@@ -155,6 +162,84 @@ class RoomViewModel (
 
             }
 
+            is RoomEvent.UnfavoriteRoom -> {
+                _state.update { it.copy(
+                    currentRoom = event.room
+                )}
+                val userEmail = event.userEmail
+                val currentRoom = state.value.currentRoom?.id
+                Log.d(TAG, "currentRoom: ${currentRoom}, userEmail: $userEmail")
+
+                viewModelScope.launch {
+                    val roomAndFavorite = RoomAndFavorites(
+                        roomId = currentRoom!!, // Return if currentId is null
+                        userEmail = userEmail!!,
+                        isFavorite = false,
+                    )
+                    // Proceed with saving roomAndUser
+                    roomAndFavoritesDao.upsertFavoriteRoom(roomAndFavorite)
+
+                    // Update state on the main thread
+                    withContext(Dispatchers.Main) {
+                        _state.update {
+                            it.copy(
+                                emailOfUser = "",
+                                isFavorite = false,
+                            )
+                        }
+                    }
+                }
+//                val updatedFavoriteRoomIds = favoriteRoomIds.value.toMutableList().apply {
+//                    remove(event.room.id)
+//                }
+//                saveFavoriteRoomIds(context, updatedFavoriteRoomIds)
+//                _favoriteRoomIds.value = updatedFavoriteRoomIds
+            }
+
+            is RoomEvent.FavoriteRoom -> {
+                _state.update {
+                    it.copy(
+                        currentRoom = event.room
+                    )
+                }
+                val userEmail = event.userEmail
+                val currentRoom = state.value.currentRoom?.id
+                Log.d(TAG, "currentRoom: ${currentRoom}, userEmail: $userEmail")
+
+                viewModelScope.launch {
+                    val roomAndFavorite = RoomAndFavorites(
+                        roomId = currentRoom!!, // Return if currentId is null
+                        userEmail = userEmail!!,
+                        isFavorite = true,
+                    )
+                    // Proceed with saving roomAndUser
+                    roomAndFavoritesDao.upsertFavoriteRoom(roomAndFavorite)
+
+                    // Update state on the main thread
+                    withContext(Dispatchers.Main) {
+                        _state.update {
+                            it.copy(
+                                emailOfUser = "",
+                                isFavorite = false,
+                            )
+                        }
+                    }
+                }
+
+
+                _state.update {
+                    it.copy(
+                        emailOfUser = "",
+                        currentRoom = event.room,
+                        isFavorite = false,
+                    )
+                }
+//                val updatedFavoriteRoomIds = favoriteRoomIds.value.toMutableList().apply {
+//                    add(event.room.id)
+//                }
+//                saveFavoriteRoomIds(context, updatedFavoriteRoomIds)
+//                _favoriteRoomIds.value = updatedFavoriteRoomIds
+            }
 
             is RoomEvent.SaveEdits -> {
                 val newRoomName = state.value.roomName
@@ -564,6 +649,58 @@ class RoomViewModel (
                 }
             }
 
+            is RoomEvent.GetFavoriteRoomIdFromUserEmail -> {
+                val userEmail = event.emailId
+                val currentRooms = event.rooms
+                viewModelScope.launch {
+                    val roomIds = mutableListOf<Long>()
+                    for (room in currentRooms) {
+                        try {
+                            val roomId = roomAndFavoritesDao.getFavoriteRoomIdFromUserEmail(userEmail, room.id)
+                            if (roomId != null) { // Check if roomId is not null
+                                roomIds.add(roomId)
+                            } else {
+                                // Handle the case where roomId is null
+                                Log.e("RoomViewModel", "RoomId is null for room: $room")
+                            }
+                        } catch (e: Exception) {
+                            // Log the error
+                            Log.e("RoomViewModel", "Error getting roomId: ${e.message}")
+                        }
+                    }
+
+                    _state.update { it.copy(
+                        currentFavoriteRoomIds = roomIds
+                    )}
+                }
+
+//                val userEmail = event.emailId
+//                val currentRooms = event.rooms
+//                viewModelScope.launch {
+//                    val favoriteRoomIds = mutableListOf<Long>()
+//                    for (favoriteroom in currentRooms) {
+//                        try {
+//                            val isFavorite = roomAndFavoritesDao.getIsFavorite(userEmail!!, favoriteroom.id)
+//                            Log.d("isFavorite", "$isFavorite")
+//                            if (isFavorite) { // Check if roomId is not null
+//                                favoriteRoomIds.add(favoriteroom.id)
+//                            } else {
+//                                // Handle the case where roomId is null
+//                                favoriteRoomIds.remove(favoriteroom.id)
+//                                Log.e("RoomViewModel", "RoomId is null for favorite room: $favoriteroom")
+//                            }
+//                        } catch (e: Exception) {
+//                            // Log the error
+//                            Log.e("RoomViewModel", "Error getting roomId: ${e.message}")
+//                        }
+//                    }
+//
+//                    _state.update { it.copy(
+//                        currentFavoriteRoomIds = favoriteRoomIds
+//                    )}
+//                }
+            }
+
             is RoomEvent.GetEmailFromRoom-> {
                 val userEmail = event.emailId
                 val currentRooms = event.rooms
@@ -573,6 +710,7 @@ class RoomViewModel (
                         try {
                             val userPresent =
                                 userEmail?.let { roomAndUserDao.getUserEmailFromRoomId(it, room.id) }
+                            Log.d("userPresent", "${userPresent}")
 
                             if (userPresent == true) { // Check if roomId is not null
                                 presentRoom.add(room.id)
@@ -954,6 +1092,117 @@ class RoomViewModel (
         }
     }
 
+    suspend fun unfavoriteRoom(userEmail: String, room: Room) {
+        _state.update { it.copy(
+            currentRoom = room
+        )}
+        val currentRoom = state.value.currentRoom?.id
+        Log.d(TAG, "currentRoom: ${currentRoom}, userEmail: $userEmail")
+
+        viewModelScope.launch {
+            val roomAndFavorite = RoomAndFavorites(
+                roomId = currentRoom!!, // Return if currentId is null
+                userEmail = userEmail!!,
+                isFavorite = false,
+            )
+            // Proceed with saving roomAndUser
+            roomAndFavoritesDao.upsertFavoriteRoom(roomAndFavorite)
+
+            // Update state on the main thread
+            withContext(Dispatchers.Main) {
+                _state.update {
+                    it.copy(
+                        emailOfUser = "",
+                        isFavorite = false,
+                    )
+                }
+            }
+        }
+//                val updatedFavoriteRoomIds = favoriteRoomIds.value.toMutableList().apply {
+//                    remove(event.room.id)
+//                }
+//                saveFavoriteRoomIds(context, updatedFavoriteRoomIds)
+//                _favoriteRoomIds.value = updatedFavoriteRoomIds
+    }
+
+    suspend fun favoriteRoom(userEmail: String, room: Room) {
+        _state.update {
+            it.copy(
+                currentRoom = room
+            )
+        }
+        val currentRoom = state.value.currentRoom?.id
+        Log.d(TAG, "currentRoom: ${currentRoom}, userEmail: $userEmail")
+
+        viewModelScope.launch {
+            val roomAndFavorite = RoomAndFavorites(
+                roomId = currentRoom!!, // Return if currentId is null
+                userEmail = userEmail!!,
+                isFavorite = true,
+            )
+            // Proceed with saving roomAndUser
+            roomAndFavoritesDao.upsertFavoriteRoom(roomAndFavorite)
+
+            // Update state on the main thread
+            withContext(Dispatchers.Main) {
+                _state.update {
+                    it.copy(
+                        emailOfUser = "",
+                        isFavorite = false,
+                    )
+                }
+            }
+        }
+
+
+        _state.update {
+            it.copy(
+                emailOfUser = "",
+                currentRoom = room,
+                isFavorite = false,
+            )
+        }
+//                val updatedFavoriteRoomIds = favoriteRoomIds.value.toMutableList().apply {
+//                    add(event.room.id)
+//                }
+//                saveFavoriteRoomIds(context, updatedFavoriteRoomIds)
+//                _favoriteRoomIds.value = updatedFavoriteRoomIds
+    }
+
+    suspend fun getIsFavorite(userEmail: String, id: Long): Boolean {
+        return withContext(Dispatchers.IO) {
+            roomAndFavoritesDao.getIsFavorite(userEmail, id)
+        }
+    }
+
+    suspend fun getRoomAndFavorite(userEmail: String, id: Long): RoomAndFavorites {
+        return withContext(Dispatchers.IO) {
+            roomAndFavoritesDao.getRoomAndFavoriteFromId(id, userEmail)
+        }
+    }
+
+    suspend fun checkFavoriteRoom(id: Long, userEmail: String): Boolean {
+        return withContext(Dispatchers.IO) {
+            val isFavorite = roomAndFavoritesDao.getIsFavorite(userEmail, id)
+            isFavorite
+        }
+    }
+
+    // Add a method to save favorite room IDs to SharedPreferences
+    fun saveFavoriteRoomIds(context: Context, favoriteRoomIds: List<Long>) {
+        val sharedPreferences = context.getSharedPreferences("favorites", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("favoriteRoomIds", favoriteRoomIds.joinToString(","))
+        editor.apply()
+    }
+
+    // Add a method to load favorite room IDs from SharedPreferences
+    fun loadFavoriteRoomIds(context: Context): List<Long> {
+        val sharedPreferences = context.getSharedPreferences("favorites", Context.MODE_PRIVATE)
+        val favoriteRoomIdsString = sharedPreferences.getString("favoriteRoomIds", "")
+        return favoriteRoomIdsString?.split(",")?.mapNotNull { it.toLongOrNull() } ?: emptyList()
+    }
+
     suspend fun CheckPassword(): Boolean {
         val currentRoomPassword = state.value.currentRoom?.password
         if (state.value.passwordToEnter == currentRoomPassword) {
@@ -971,4 +1220,3 @@ class RoomViewModel (
 
         }
     }
-

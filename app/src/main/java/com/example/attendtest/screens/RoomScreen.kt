@@ -293,9 +293,3 @@ fun FirstNameAndLastName(
         }
     }
 }
-
-//@Preview
-//@Composable
-//fun RoomScreenPreview(){
-//    RoomScreen()
-//}

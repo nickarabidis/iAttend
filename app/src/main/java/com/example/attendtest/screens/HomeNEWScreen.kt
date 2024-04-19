@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,10 +36,16 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,6 +65,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import com.example.attendtest.components.PasswordNeededDialog
 import com.example.attendtest.data.room.RoomViewModel
+import com.example.attendtest.database.room.Room
+import com.example.attendtest.database.roomAndFavorites.RoomAndFavorites
+import com.example.attendtest.database.roomAndUser.RoomAndUser
 import com.example.attendtest.database.roomAndUser.RoomAndUserDao
 import com.example.attendtest.navigation.AppRouter
 import com.example.attendtest.navigation.Screen
@@ -81,6 +91,8 @@ fun HomeNewScreen(state: RoomState,
 
     userNewViewModel.getUserData()
 
+    // Collect the favorite room IDs from RoomViewModel
+//    val favoriteRoomIds by remember { roomNewViewModel.loadFavoriteRoomIds(LocalContext.current) }.collectAsState(emptyList())
 
     Log.d(userNewViewModel.TAG,"userNewViewModel.emailId= ${userNewViewModel.emailId}")
 
@@ -262,22 +274,33 @@ fun HomeNewScreen(state: RoomState,
                                             }
 
                                             onEvent(RoomEvent.GetEmailFromRoom(userNewViewModel.emailId, state.rooms))
+                                            onEvent(RoomEvent.GetFavoriteRoomIdFromUserEmail(userNewViewModel.emailId, state.rooms))
 
-                                            //                                            when (room.id) {
-//
-//                                            }
-//                                            if (room.id == ) {
-//
-//                                            }
                                             IconButton(onClick = {
-                                                Log.d("Pressed favorite", "Favorite room: ${room.roomName}")
-                                                onEvent(RoomEvent.FavoriteRoom(room))
+                                                scope.launch {
+                                                    if (!roomNewViewModel.checkFavoriteRoom(room.id, userNewViewModel.emailId!!)) {
+                                                        Log.d("Pressed favorite", "Favorite room: ${room.roomName}")
+                                                        onEvent(RoomEvent.FavoriteRoom(room, userNewViewModel.emailId))
+                                                    } else {
+                                                        Log.d("Pressed unfavorite", "Unfavorite room: ${room.roomName}")
+                                                        onEvent(RoomEvent.UnfavoriteRoom(room, userNewViewModel.emailId))
+                                                    }
+                                                }
                                             }) {
-                                                Icon(
-                                                    imageVector = Icons.Default.FavoriteBorder,
-                                                    contentDescription = stringResource(id = R.string.add_favorites)
-                                                )
+                                                FavoriteAndUnfavoriteIcon(viewModel = roomNewViewModel, userEmail = userNewViewModel.emailId!!, room)
+//                                                if (favoriteRoomIds.contains(room.id)){
+//                                                    Icon(
+//                                                        imageVector = Icons.Default.Favorite,
+//                                                        contentDescription = stringResource(id = R.string.add_favorites)
+//                                                    )
+//                                                }else{
+//                                                    Icon(
+//                                                        imageVector = Icons.Default.FavoriteBorder,
+//                                                        contentDescription = stringResource(id = R.string.remove_favorites)
+//                                                    )
+//                                                }
                                             }
+
 
                                             //CHECK IF ADMIN EMAIL IS THE SAME WITH USER
                                             if (room.emailAdmin != userNewViewModel.emailId){
@@ -380,10 +403,47 @@ fun HomeNewScreen(state: RoomState,
 
 }
 
+@Composable
+fun FavoriteAndUnfavoriteIcon(
+    viewModel: RoomViewModel,
+    userEmail: String,
+    room: Room
+) {
+    val favorite = remember(userEmail) { mutableStateOf(false) }
+    var roomAndFavorite: RoomAndFavorites? = null
+    val scope = rememberCoroutineScope()
 
-//
-//@Preview
-//@Composable
-//fun HomeNewScreenPreview(){
-//    HomeNewScreen(state = , onEvent = )
-//}
+    LaunchedEffect(userEmail, room) {
+        val fetchedIsFavorite = viewModel.getIsFavorite(userEmail, room.id)
+        favorite.value = fetchedIsFavorite
+        roomAndFavorite = viewModel.getRoomAndFavorite(userEmail, room.id)
+    }
+
+    IconButton(onClick = {
+        scope.launch {
+            if (!favorite.value) {
+                viewModel.favoriteRoom(userEmail, room)
+            } else {
+                viewModel.unfavoriteRoom(userEmail, room)
+            }
+            // After the event, update the favorite value
+            val fetchedIsFavorite = viewModel.getIsFavorite(userEmail, room.id)
+            favorite.value = fetchedIsFavorite
+        }
+    }) {
+        when (favorite.value) {
+            true -> {
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = stringResource(id = R.string.add_favorites)
+                )
+            }
+            else -> {
+                Icon(
+                    imageVector = Icons.Default.FavoriteBorder,
+                    contentDescription = stringResource(id = R.string.remove_favorites)
+                )
+            }
+        }
+    }
+}

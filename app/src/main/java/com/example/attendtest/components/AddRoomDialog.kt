@@ -39,7 +39,7 @@ fun AddRoomDialog(
             onEvent(RoomEvent.HideAddRoomDialog)
         },
         title = {
-            Text(text = "Add Room")
+            Text(text = stringResource(id = R.string.add_room))
         },
         text = {
             Column(
@@ -51,7 +51,7 @@ fun AddRoomDialog(
                         onEvent(RoomEvent.SetRoomName(it))
                     },
                     placeholder = {
-                        Text(text = "Room Name")
+                        Text(text = stringResource(id = R.string.room_name))
                     }
                 )
                 TextField(
@@ -60,7 +60,7 @@ fun AddRoomDialog(
                         onEvent(RoomEvent.SetPassword(it))
                     },
                     placeholder = {
-                        Text(text = "Password")
+                        Text(text = stringResource(id = R.string.password))
                     }
                 )
                 Column {

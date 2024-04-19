@@ -3,6 +3,7 @@ package com.example.attendtest.data.room
 import com.example.attendtest.database.room.Room
 import com.example.attendtest.database.room.RoomSortType
 import com.example.attendtest.database.room.RoomVisibilityType
+import com.example.attendtest.database.roomAndFavorites.RoomAndFavorites
 import com.example.attendtest.database.roomAndUser.RoomAndUser
 import com.example.attendtest.database.roomAndUser.RoomAndUserSortType
 import java.util.Date
@@ -43,6 +44,8 @@ data class RoomState(
     val currentRoomIds: List<Long> = emptyList(),
     val currentPresentRoomIds: List<Long> = emptyList(),
 
+    val currentFavoriteRoomIds: List<Long> = emptyList(),
+    val isFavorite: Boolean = false,
 
     //val privacyPolicyAccepted: Boolean = false,
 
