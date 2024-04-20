@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.attendtest.data.user.UserViewModel
 import com.example.attendtest.database.room.Room
 import com.example.attendtest.database.room.RoomDao
 import com.example.attendtest.database.room.RoomSortType
@@ -114,6 +116,41 @@ class RoomViewModel (
                 ) }
             }
 
+            is RoomEvent.InitFavoriteRoom -> {
+                val emailOfUser = event.userEmail
+                val id = state.value.currentRoom?.id
+                val isFavorite = false
+
+                val roomAndFavorite = id?.let {
+                    RoomAndFavorites(
+                        userEmail = emailOfUser!!,
+                        roomId = it,
+                        isFavorite = isFavorite,
+                    )
+                }
+                viewModelScope.launch {
+                    Log.d("Init email", "$emailOfUser")
+                    Log.d("Init id", "$id")
+
+                    roomAndFavoritesDao.upsertFavoriteRoom(roomAndFavorite!!)
+//                    val id = dao.insertRoom(room)
+                    Log.d(TAG, "id: $id")
+
+
+                    _state.update {
+                        it.copy(
+                            id = id!!,
+                            isFavorite = false,
+                            //isVisible = false,
+                            //passwordNeeded = false
+                            //currentRoom = roomName
+                        )
+                    }
+
+                    Log.d(TAG, "id: ${state.value.id}")
+                }
+            }
+
             is RoomEvent.SaveRoom -> {
                 val roomName = state.value.roomName
                 val password = state.value.password
@@ -122,7 +159,8 @@ class RoomViewModel (
                 val isVisible = state.value.isVisible
                 val passwordNeeded = state.value.passwordNeeded
 
-                Log.d(TAG, "id: $emailAdmin")
+                val emailOfUser = event.userEmail
+                val isFavorite = false
 
                 if (emailAdmin != null) {
                     if(roomName.isBlank() || password.isBlank() || emailAdmin.isBlank()){
@@ -144,6 +182,16 @@ class RoomViewModel (
 //                    val id = dao.insertRoom(room)
                     Log.d(TAG, "id: $id")
 
+                    val roomAndFavorite = RoomAndFavorites(
+                        userEmail = emailOfUser!!,
+                        roomId = id,
+                        isFavorite = isFavorite,
+                    )
+
+                    roomAndFavoritesDao.upsertFavoriteRoom(roomAndFavorite!!)
+
+                    Log.d("Init email", "$emailOfUser")
+                    Log.d("Init id", "$id")
 
                     _state.update { it.copy(
                         id = id,
@@ -151,12 +199,13 @@ class RoomViewModel (
                         roomName = "",
                         password = "",
                         emailAdmin = "",
+                        isFavorite = false,
                         //isVisible = false,
                         //passwordNeeded = false
-                        //currentRoom = roomName
+                        currentRoom = room
                     ) }
 
-                    Log.d(TAG, "id: ${state.value.id}")
+                    Log.d(TAG, "id111: ${state.value.id}")
                 }
 
 
@@ -387,13 +436,22 @@ class RoomViewModel (
                             // Proceed with saving roomAndUser
                             roomAndUserDao.upsertRoomAndUser(roomAndUser)
 
+                            val roomAndFavorite = RoomAndFavorites(
+                                userEmail = emailOfUser,
+                                roomId = currentId,
+                                isFavorite = false,
+                            )
+
+                            roomAndFavoritesDao.upsertFavoriteRoom(roomAndFavorite!!)
+
                             // Update state on the main thread
                             withContext(Dispatchers.Main) {
                                 _state.update { it.copy(
                                     isAddingUserInRoom = false,
                                     emailOfUser = "",
                                     isPresent = false,
-                                    presentDate = null
+                                    presentDate = null,
+                                    isFavorite = false
                                 ) }
                             }
                         }

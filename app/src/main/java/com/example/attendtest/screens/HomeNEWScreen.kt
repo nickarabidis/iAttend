@@ -9,6 +9,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -106,6 +107,13 @@ fun HomeNewScreen(state: RoomState,
                 NavigationDrawerHeader(userNewViewModel.emailId)
                 NavigationDrawerBody(navigationDrawerItems = userNewViewModel.navigationItemsList,
                     onNavigationItemClicked = {
+                        when (it.title) {
+                            "Favorites" -> {
+                                onEvent(RoomEvent.SortRooms(RoomSortType.FAVORITES))
+                                AppRouter.navigateTo(Screen.FavoriteRoomScreen)
+                            }
+                            // "Settings" -> TODO("Add settings screen for user")
+                        }
                         Log.d("ComingHere", "inside_onNavigationItemClicked")
                         Log.d("ComingHere", "${it.itemId} ${it.title}")
                     })
@@ -152,9 +160,13 @@ fun HomeNewScreen(state: RoomState,
                                 FloatingActionButton(onClick = {
                                     onEvent(RoomEvent.ShowAddRoomDialog(userNewViewModel.emailId))
                                 }){
-                                    Icon(imageVector = Icons.Default.Add,
-                                        contentDescription = stringResource(id = R.string.add_room)
-                                    )
+                                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(16.dp)) {
+                                        Icon(imageVector = Icons.Default.Add,
+                                            contentDescription = stringResource(id = R.string.add_room)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(text = stringResource(id = R.string.add_room))
+                                    }
                                 }
                             },
                             modifier = Modifier.padding(16.dp)
@@ -188,7 +200,7 @@ fun HomeNewScreen(state: RoomState,
                                             text = stringResource(id = R.string.sort) + ":",
                                             fontWeight = FontWeight.Bold
                                         )
-                                        RoomSortType.entries.forEach { sortType ->
+                                        RoomSortType.entries.filter { it != RoomSortType.FAVORITES }.forEach { sortType ->
                                             Row(
                                                 modifier = Modifier
                                                     .clickable{
@@ -206,7 +218,7 @@ fun HomeNewScreen(state: RoomState,
                                                     RoomSortType.ID.toString() -> stringResource(id = R.string.sort_id)
                                                     RoomSortType.ROOM_NAME.toString() -> stringResource(id = R.string.sort_room_name)
                                                     RoomSortType.EMAIL_ADMIN.toString() -> stringResource(id = R.string.sort_email_admin)
-                                                    RoomSortType.FAVORITES.toString() -> stringResource(id = R.string.sort_favorites)
+//                                                    RoomSortType.FAVORITES.toString() -> stringResource(id = R.string.sort_favorites)
 
                                                     // RoomSortType.PASSWORD.toString() -> "Test"
                                                     else -> {"Can't find asked sortType"}
@@ -236,6 +248,7 @@ fun HomeNewScreen(state: RoomState,
                                                 .fillMaxWidth()
                                                 .clickable {
                                                     if (userNewViewModel.emailId == room.emailAdmin) {
+                                                        onEvent(RoomEvent.SortRooms(RoomSortType.FAVORITES))
                                                         AppRouter.navigateTo(Screen.RoomScreen(room))
                                                     }
                                                 }

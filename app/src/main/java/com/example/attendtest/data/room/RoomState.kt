@@ -22,6 +22,8 @@ data class RoomState(
     val sortType: RoomSortType = RoomSortType.ID,
     val isDone: Boolean = false,
 
+    val currentUser: String = "",
+
     // visibility
     var isVisible: Boolean = true,
     var visibilityType: RoomVisibilityType = RoomVisibilityType.VISIBLE,

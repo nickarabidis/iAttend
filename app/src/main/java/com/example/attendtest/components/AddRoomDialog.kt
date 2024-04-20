@@ -23,17 +23,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.attendtest.R
 import com.example.attendtest.data.room.RoomEvent
 import com.example.attendtest.data.room.RoomState
+import com.example.attendtest.data.user.UserViewModel
 import com.example.attendtest.database.room.RoomVisibilityType
 
 @Composable
 fun AddRoomDialog(
     state: RoomState,
     onEvent: (RoomEvent) -> Unit,
+    userNewViewModel: UserViewModel = viewModel(),
     modifier: Modifier = Modifier
 ){
+
+
     AlertDialog(
         onDismissRequest = {
             onEvent(RoomEvent.HideAddRoomDialog)
@@ -173,7 +178,7 @@ fun AddRoomDialog(
                 contentAlignment = Alignment.CenterEnd
             ){
                 Button(onClick = {
-                    onEvent(RoomEvent.SaveRoom)
+                    onEvent(RoomEvent.SaveRoom(userNewViewModel.emailId))
                 }){
                     Text(text = "Save")
                 }

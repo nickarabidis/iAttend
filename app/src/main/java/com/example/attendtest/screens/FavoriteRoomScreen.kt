@@ -8,6 +8,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -105,6 +107,13 @@ fun FavoriteRoomScreen(state: RoomState,
                 NavigationDrawerHeader(userNewViewModel.emailId)
                 NavigationDrawerBody(navigationDrawerItems = userNewViewModel.navigationItemsList,
                     onNavigationItemClicked = {
+                        when (it.title) {
+                            "Home" -> {
+                                onEvent(RoomEvent.SortRooms(RoomSortType.ID))
+                                AppRouter.navigateTo(Screen.HomeNewScreen)
+                            }
+                            // "Settings" -> TODO("Add settings screen for user")
+                        }
                         Log.d("ComingHere", "inside_onNavigationItemClicked")
                         Log.d("ComingHere", "${it.itemId} ${it.title}")
                     })
@@ -120,7 +129,7 @@ fun FavoriteRoomScreen(state: RoomState,
                 //snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                 topBar = {
                     AppToolbar(
-                        toolbarTitle = stringResource(id = R.string.home),
+                        toolbarTitle = "Favorites",
                         logoutButtonClicked = {
                             userNewViewModel.logoutDatabase()
                         },
@@ -149,11 +158,16 @@ fun FavoriteRoomScreen(state: RoomState,
                         Scaffold(
                             floatingActionButton = {
                                 FloatingActionButton(onClick = {
-                                    onEvent(RoomEvent.ShowAddRoomDialog(userNewViewModel.emailId))
+                                    onEvent(RoomEvent.SortRooms(RoomSortType.ID))
+                                    AppRouter.navigateTo(Screen.HomeNewScreen)
                                 }){
-                                    Icon(imageVector = Icons.Default.Add,
-                                        contentDescription = stringResource(id = R.string.add_room)
-                                    )
+                                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(16.dp)) {
+                                        Icon(imageVector = Icons.Default.Home,
+                                            contentDescription = stringResource(id = R.string.back_to_home)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(text = stringResource(id = R.string.back_to_home))
+                                    }
                                 }
                             },
                             modifier = Modifier.padding(16.dp)
@@ -187,39 +201,28 @@ fun FavoriteRoomScreen(state: RoomState,
                                             text = stringResource(id = R.string.sort) + ":",
                                             fontWeight = FontWeight.Bold
                                         )
-                                        RoomSortType.entries.forEach { sortType ->
                                             Row(
                                                 modifier = Modifier
                                                     .clickable{
-                                                        onEvent(RoomEvent.SortRooms(sortType))
+                                                        onEvent(RoomEvent.SortRooms(RoomSortType.FAVORITES))
                                                     },
                                                 verticalAlignment = Alignment.CenterVertically
                                             ){
                                                 RadioButton(
-                                                    selected = state.sortType == sortType,
-                                                    onClick = { onEvent(RoomEvent.SortRooms(sortType)) }
+                                                    selected = state.sortType == RoomSortType.FAVORITES,
+                                                    onClick = { }
                                                 )
 
-                                                // Custom sort names
-                                                val sortText = when (sortType.name) {
-                                                    RoomSortType.ID.toString() -> stringResource(id = R.string.sort_id)
-                                                    RoomSortType.ROOM_NAME.toString() -> stringResource(id = R.string.sort_room_name)
-                                                    RoomSortType.EMAIL_ADMIN.toString() -> stringResource(id = R.string.sort_email_admin)
-                                                    RoomSortType.FAVORITES.toString() -> stringResource(id = R.string.sort_favorites)
-
-                                                    // RoomSortType.PASSWORD.toString() -> "Test"
-                                                    else -> {"Can't find asked sortType"}
-                                                }
-                                                Text(text = sortText)
+                                                Text(text = stringResource(id = R.string.sort_favorites))
                                             }
-                                        }
+
                                     }
                                 }//&& state.emailOfUser ==
-                                onEvent(RoomEvent.GetRoomIdFromUserEmail(userNewViewModel.emailId, state.rooms))
+                                onEvent(RoomEvent.GetFavoriteRoomIdFromUserEmail(userNewViewModel.emailId, state.rooms))
                                 items(state.rooms.filter {room ->
-                                    val currentRoomIds = state.currentRoomIds
+                                    val currentFavoriteRoomIds = state.currentFavoriteRoomIds
                                     val emailAdminMatches = room.emailAdmin == userNewViewModel.emailId
-                                    val roomIdMatches = currentRoomIds.contains(room.id)
+                                    val roomIdMatches = currentFavoriteRoomIds.contains(room.id)
                                     emailAdminMatches || roomIdMatches
                                     //it.emailAdmin == userNewViewModel.emailId || state.currentRoomId == it.id
                                 }){ room ->
@@ -235,6 +238,7 @@ fun FavoriteRoomScreen(state: RoomState,
                                                 .fillMaxWidth()
                                                 .clickable {
                                                     if (userNewViewModel.emailId == room.emailAdmin) {
+                                                        onEvent(RoomEvent.SortRooms(RoomSortType.ID))
                                                         AppRouter.navigateTo(Screen.RoomScreen(room))
                                                     }
                                                 }

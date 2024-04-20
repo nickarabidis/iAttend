@@ -9,7 +9,10 @@ import com.example.attendtest.database.roomAndUser.RoomAndUserSortType
 
 
 sealed interface RoomEvent {
-    data object SaveRoom: RoomEvent
+    data class SaveRoom(val userEmail: String?): RoomEvent
+
+    data class InitFavoriteRoom(val userEmail: String?): RoomEvent
+
     data object SaveEdits: RoomEvent
 
     data class FavoriteRoom(val room: Room, val userEmail: String?): RoomEvent

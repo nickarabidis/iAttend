@@ -9,9 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.example.attendtest.data.room.RoomEvent
 import com.example.attendtest.data.room.RoomState
+import com.example.attendtest.database.room.RoomSortType
 import com.example.attendtest.screens.SignUpNewScreen
 import com.example.attendtest.navigation.AppRouter
 import com.example.attendtest.navigation.Screen
+import com.example.attendtest.screens.FavoriteRoomScreen
 import com.example.attendtest.screens.HomeNewScreen
 import com.example.attendtest.screens.LoginNewScreen
 import com.example.attendtest.screens.RoomScreen
@@ -45,6 +47,10 @@ fun App(state: RoomState,
                 }
                 is Screen.RoomScreen ->{
                     RoomScreen((currentState.value as Screen.RoomScreen).room, state, onEvent)
+                }
+                is Screen.FavoriteRoomScreen -> {
+//                    onEvent(RoomEvent.SortRooms(RoomSortType.FAVORITES))
+                    FavoriteRoomScreen(state, onEvent)
                 }
             }
         }

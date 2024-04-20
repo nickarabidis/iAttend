@@ -8,10 +8,13 @@ import com.example.attendtest.database.room.Room
 
 sealed class Screen {
 
-    object SignUpNewScreen : Screen()
-    object LoginNewScreen : Screen()
-    object HomeNewScreen : Screen()
-    object TermsAndConditionsScreen : Screen()
+    data object SignUpNewScreen : Screen()
+    data object LoginNewScreen : Screen()
+    data object HomeNewScreen : Screen()
+
+    data object FavoriteRoomScreen : Screen()
+
+    data object TermsAndConditionsScreen : Screen()
     class RoomScreen(val room: Room) : Screen()
 
 }

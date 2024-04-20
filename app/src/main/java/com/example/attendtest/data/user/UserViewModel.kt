@@ -358,7 +358,7 @@ class UserViewModel (
             itemId = "settingsScreen"
         ),
         NavigationItem(
-            title = "Favorite",
+            title = "Favorites",
             icon = Icons.Default.Favorite,
             description = "Favorite Screen",
             itemId = "favoriteScreen"

@@ -53,6 +53,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 import androidx.compose.runtime.*
+import com.example.attendtest.database.room.RoomSortType
 import com.example.attendtest.database.roomAndUser.RoomAndUser
 import kotlinx.coroutines.launch
 
@@ -260,6 +261,7 @@ fun RoomScreen(room: Room,
         }
     }
     SystemBackButtonHandler {
+        onEvent(RoomEvent.SortRooms(RoomSortType.ID))
         AppRouter.navigateTo(Screen.HomeNewScreen)
     }
 }
