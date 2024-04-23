@@ -93,7 +93,7 @@ class RoomViewModel (
             roomanduserSortType = roomAndUserSortType,
             roomAndUsers = roomAndUsers,
 
-        )
+            )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), RoomState())
 
     fun onEvent(event: RoomEvent){
@@ -965,7 +965,7 @@ class RoomViewModel (
 //        //validateDateWithRules()
 //    }
 
-//    private suspend fun getEmailAndPasswordFromDatabase(email: String): Pair<String?, String?> {
+    //    private suspend fun getEmailAndPasswordFromDatabase(email: String): Pair<String?, String?> {
 //        return withContext(Dispatchers.IO) {
 //            val emailFromDatabase = dao.getEmail(email)
 //            val passwordFromDatabase = dao.getPassword(email)
@@ -1157,25 +1157,26 @@ class RoomViewModel (
         val currentRoom = state.value.currentRoom?.id
         Log.d(TAG, "currentRoom: ${currentRoom}, userEmail: $userEmail")
 
-        viewModelScope.launch {
-            val roomAndFavorite = RoomAndFavorites(
-                roomId = currentRoom!!, // Return if currentId is null
-                userEmail = userEmail!!,
-                isFavorite = false,
-            )
-            // Proceed with saving roomAndUser
-            roomAndFavoritesDao.upsertFavoriteRoom(roomAndFavorite)
 
-            // Update state on the main thread
-            withContext(Dispatchers.Main) {
-                _state.update {
-                    it.copy(
-                        emailOfUser = "",
-                        isFavorite = false,
-                    )
-                }
+        val roomAndFavorite = RoomAndFavorites(
+            roomId = currentRoom!!, // Return if currentId is null
+            userEmail = userEmail!!,
+            isFavorite = false,
+        )
+        // Proceed with saving roomAndUser
+        roomAndFavoritesDao.upsertFavoriteRoom(roomAndFavorite)
+
+        // Update state on the main thread
+        withContext(Dispatchers.Main) {
+            _state.update {
+                it.copy(
+                    emailOfUser = "",
+                    currentRoom = room,
+                    isFavorite = false,
+                )
             }
         }
+
 //                val updatedFavoriteRoomIds = favoriteRoomIds.value.toMutableList().apply {
 //                    remove(event.room.id)
 //                }
@@ -1192,25 +1193,25 @@ class RoomViewModel (
         val currentRoom = state.value.currentRoom?.id
         Log.d(TAG, "currentRoom: ${currentRoom}, userEmail: $userEmail")
 
-        viewModelScope.launch {
-            val roomAndFavorite = RoomAndFavorites(
-                roomId = currentRoom!!, // Return if currentId is null
-                userEmail = userEmail!!,
-                isFavorite = true,
-            )
-            // Proceed with saving roomAndUser
-            roomAndFavoritesDao.upsertFavoriteRoom(roomAndFavorite)
 
-            // Update state on the main thread
-            withContext(Dispatchers.Main) {
-                _state.update {
-                    it.copy(
-                        emailOfUser = "",
-                        isFavorite = false,
-                    )
-                }
-            }
-        }
+        val roomAndFavorite = RoomAndFavorites(
+            roomId = currentRoom!!, // Return if currentId is null
+            userEmail = userEmail!!,
+            isFavorite = true,
+        )
+        // Proceed with saving roomAndUser
+        roomAndFavoritesDao.upsertFavoriteRoom(roomAndFavorite)
+
+        // Update state on the main thread
+
+//            _state.update {
+//                it.copy(
+//                    emailOfUser = "",
+//                    isFavorite = false,
+//                )
+//            }
+
+
 
 
         _state.update {
@@ -1240,10 +1241,9 @@ class RoomViewModel (
     }
 
     suspend fun checkFavoriteRoom(id: Long, userEmail: String): Boolean {
-        return withContext(Dispatchers.IO) {
-            val isFavorite = roomAndFavoritesDao.getIsFavorite(userEmail, id)
-            isFavorite
-        }
+
+        val isFavorite = roomAndFavoritesDao.getIsFavorite(userEmail, id)
+        return isFavorite
     }
 
     // Add a method to save favorite room IDs to SharedPreferences
@@ -1271,10 +1271,10 @@ class RoomViewModel (
             return true
         }else{
             _state.update { it.copy(
-                    validPassword = false
+                validPassword = false
             )}
             return false
         }
 
-        }
     }
+}

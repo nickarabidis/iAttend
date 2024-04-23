@@ -79,9 +79,9 @@ import com.example.attendtest.navigation.SystemBackButtonHandler
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoriteRoomScreen(state: RoomState,
-                  onEvent: (RoomEvent) -> Unit,
-                  userNewViewModel: UserViewModel = viewModel(),
-                  roomNewViewModel: RoomViewModel = viewModel()
+                       onEvent: (RoomEvent) -> Unit,
+                       userNewViewModel: UserViewModel = viewModel(),
+                       roomNewViewModel: RoomViewModel = viewModel()
 ){
     //val snackbarHostState  = remember { SnackbarHostState() }
     //val scope = rememberCoroutineScope()
@@ -201,20 +201,20 @@ fun FavoriteRoomScreen(state: RoomState,
                                             text = stringResource(id = R.string.sort) + ":",
                                             fontWeight = FontWeight.Bold
                                         )
-                                            Row(
-                                                modifier = Modifier
-                                                    .clickable{
-                                                        onEvent(RoomEvent.SortRooms(RoomSortType.FAVORITES))
-                                                    },
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ){
-                                                RadioButton(
-                                                    selected = state.sortType == RoomSortType.FAVORITES,
-                                                    onClick = { }
-                                                )
+                                        Row(
+                                            modifier = Modifier
+                                                .clickable{
+                                                    onEvent(RoomEvent.SortRooms(RoomSortType.FAVORITES))
+                                                },
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ){
+                                            RadioButton(
+                                                selected = state.sortType == RoomSortType.FAVORITES,
+                                                onClick = { }
+                                            )
 
-                                                Text(text = stringResource(id = R.string.sort_favorites))
-                                            }
+                                            Text(text = stringResource(id = R.string.sort_favorites))
+                                        }
 
                                     }
                                 }//&& state.emailOfUser ==
@@ -225,7 +225,7 @@ fun FavoriteRoomScreen(state: RoomState,
                                     val roomIdMatches = currentFavoriteRoomIds.contains(room.id)
                                     emailAdminMatches || roomIdMatches
                                     //it.emailAdmin == userNewViewModel.emailId || state.currentRoomId == it.id
-                                }){ room ->
+                                }.distinctBy { it.id }){ room ->
 
                                     /*
                                         visibility check
@@ -277,7 +277,7 @@ fun FavoriteRoomScreen(state: RoomState,
                                             }
 
                                             onEvent(RoomEvent.GetEmailFromRoom(userNewViewModel.emailId, state.rooms))
-                                            onEvent(RoomEvent.GetFavoriteRoomIdFromUserEmail(userNewViewModel.emailId, state.rooms))
+                                            //onEvent(RoomEvent.GetFavoriteRoomIdFromUserEmail(userNewViewModel.emailId, state.rooms))
 
                                             IconButton(onClick = {
                                                 scope.launch {

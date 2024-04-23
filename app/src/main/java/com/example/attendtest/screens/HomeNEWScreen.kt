@@ -287,11 +287,12 @@ fun HomeNewScreen(state: RoomState,
                                             }
 
                                             onEvent(RoomEvent.GetEmailFromRoom(userNewViewModel.emailId, state.rooms))
-                                            onEvent(RoomEvent.GetFavoriteRoomIdFromUserEmail(userNewViewModel.emailId, state.rooms))
+                                            //onEvent(RoomEvent.GetFavoriteRoomIdFromUserEmail(userNewViewModel.emailId, state.rooms))
 
                                             IconButton(onClick = {
                                                 scope.launch {
-                                                    if (!roomNewViewModel.checkFavoriteRoom(room.id, userNewViewModel.emailId!!)) {
+                                                    val isFavorite = roomNewViewModel.checkFavoriteRoom(room.id, userNewViewModel.emailId!!)
+                                                    if (!isFavorite) {
                                                         Log.d("Pressed favorite", "Favorite room: ${room.roomName}")
                                                         onEvent(RoomEvent.FavoriteRoom(room, userNewViewModel.emailId))
                                                     } else {

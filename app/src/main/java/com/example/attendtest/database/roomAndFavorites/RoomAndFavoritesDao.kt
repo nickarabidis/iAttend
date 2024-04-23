@@ -23,7 +23,7 @@ interface RoomAndFavoritesDao {
     @Query("SELECT COUNT(*) FROM roomandfavorites WHERE roomId = :id AND userEmail = :userEmail")
     suspend fun isRoomFavorite(id: Long, userEmail: String): Int
 
-    @Query("SELECT roomId FROM RoomAndFavorites WHERE userEmail = :userEmail AND roomId = :roomId")
+    @Query("SELECT roomId FROM RoomAndFavorites WHERE userEmail = :userEmail AND roomId = :roomId AND isFavorite = 1")
     suspend fun getFavoriteRoomIdFromUserEmail(userEmail: String?, roomId: Long): Long
 
     @Query("SELECT isPresent FROM RoomAndUser WHERE userEmail = :userEmail AND roomId = :roomId")
