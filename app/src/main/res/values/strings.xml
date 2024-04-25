@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">iAttend</string>
+    <string name="app_name" translatable="false">iAttend</string>
     <string name="hello">Hey there, </string>
     <string name="greeting">Greetings, </string>
     <string name="create_account">Create an Account </string>
@@ -20,7 +20,7 @@
     <string name="home">Home</string>
     <string name="logout">Logout</string>
     <string name="menu">Menu</string>
-    <string name="navigation_header">Navigation Header</string>
+    <string name="navigation_header" translatable="false">Navigation Header</string>
     <string name="sort">Sort by</string>
     <string name="delete_room">Delete Classroom</string>
     <string name="edit_room">Edit Room</string>
@@ -30,9 +30,9 @@
     <string name="remove_participant">Remove Participant</string>
     <string name="room_id">Classroom ID</string>
     <string name="add_room">Add Classroom</string>
-    <string name="turn_to_visible">Turn Classroom to Visible</string>
-    <string name="turn_to_password_needed">Turn Classroom to Visible with Password</string>
-    <string name="turn_to_invisible">Turn Classroom to Invisible</string>
+    <string name="turn_to_visible" translatable="false">Turn Classroom to Visible</string>
+    <string name="turn_to_password_needed" translatable="false">Turn Classroom to Visible with Password</string>
+    <string name="turn_to_invisible" translatable="false">Turn Classroom to Invisible</string>
     <string name="sort_room_name">Class Name</string>
     <string name="sort_email_admin">Class Admin</string>
     <string name="sort_id">Class ID</string>
@@ -47,5 +47,5 @@
     <string name="back_to_home">Back to Home</string>
     <string name="motto">be present, in the future</string>
     <string name="add_user">Add User</string>
-    <string name="wip_terms">There are no Terms of Use and Privacy Policy as of 25/4/2024 (due to the application\'s offline demo state).\nAn Update to this form will be present whenever the application uses \nany sort of data and personal info.</string>
+    <string name="wip_terms">There are no Terms of Use and Privacy Policy as of 25/4/2024 (due to the application\'s offline demo state). An Update to this form will be present whenever the application uses  any sort of data and personal info.</string>
 </resources>

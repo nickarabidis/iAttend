@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">"Γειά σου, "</string>
+    <string name="greeting">"Χαίρετε, "</string>
+    <string name="create_account">Δημιουργήστε Λογαριασμό!</string>
+    <string name="welcome">Καλωσόρισες!</string>
+    <string name="first_name">Όνομα</string>
+    <string name="last_name">Επώνυμο</string>
+    <string name="email">Διεύθυνση Ηλ. Ταχυδρομείου</string>
+    <string name="password">Κωδικός</string>
+    <string name="hide_password">Κρύψε Κωδικό</string>
+    <string name="show_password">Δείξε Κωδικό</string>
+    <string name="terms_and_conditions">Κάνοντας εγγραφή, συμφωνείτε στο Privacy Policy και Terms of Use μας</string>
+    <string name="terms_and_conditions_header">Όροι Χρήσης</string>
+    <string name="sign_up">Εγγραφή</string>
+    <string name="sign_in">Σύνδεση</string>
+    <string name="or">Ή</string>
+    <string name="go_to_login">Έχετε ήδη λογαριασμό, Σύνδεση</string>
+    <string name="forgot_password">Ξεχάσατε τον κωδικό σας;</string>
+    <string name="home">Κύρια Οθόνη</string>
+    <string name="logout">Αποσύνδεση</string>
+    <string name="menu">Μενού</string>
+    <string name="sort">Ταξινόμηση με βάση</string>
+    <string name="delete_room">Διαγραφή Τάξης</string>
+    <string name="edit_room">Επεξεργασία Τάξης</string>
+    <string name="add_participant">Προσθήκη συμμετέχοντα</string>
+    <string name="room_name">Όνομα Τάξης</string>
+    <string name="admin">Διαχειριστής</string>
+    <string name="remove_participant">Διαγραφή συμμετέχοντα</string>
+    <string name="room_id">ID Τάξης</string>
+    <string name="add_room">Προσθήκη Τάξης</string>
+    <string name="sort_room_name">Όνομα Τάξης</string>
+    <string name="sort_email_admin">Διαχειριστής Τάξης</string>
+    <string name="sort_id">ID Τάξης</string>
+    <string name="sort_user_email">Email Χρήστη</string>
+    <string name="is_present">είναι Παρόν!</string>
+    <string name="is_not_present">είναι Απών!</string>
+    <string name="sort_favorites">Αγαπημένα</string>
+    <string name="sort_is_present">Παρουσία</string>
+    <string name="change_visibility">Ορατότητα Τάξης</string>
+    <string name="add_favorites">Προσθήκη Τάξης στα Αγαπημένα</string>
+    <string name="remove_favorites">Διαγραφή Τάξης από Αγαπημένα</string>
+    <string name="back_to_home">Κύρια Οθόνη</string>
+    <string name="motto">γίνε παρών, στο μέλον!</string>
+    <string name="add_user">Προσθήκη Χρήστη</string>
+    <string name="wip_terms">Δεν υπάρχουν Όροι Χρήσης και Πολιτική Απορρήτου από τις 25/4/2024 (λόγω της κατάστασης επίδειξης εκτός σύνδεσης της εφαρμογής). Μια ενημέρωση σε αυτήν τη φόρμα θα υπάρχει κάθε φορά που η εφαρμογή χρησιμοποιεί οποιοδήποτε είδος δεδομένων και προσωπικών πληροφοριών.</string>
+</resources>
