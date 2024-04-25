@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">iAttend</string>
     <string name="hello">Hey there, </string>
+    <string name="greeting">Greetings, </string>
     <string name="create_account">Create an Account </string>
-    <string name="welcome">Welcome Back</string>
+    <string name="welcome">Welcome Back!</string>
     <string name="first_name">First Name</string>
     <string name="last_name">Last Name</string>
     <string name="email">Email</string>
@@ -11,8 +12,8 @@
     <string name="show_password">Show Password</string>
     <string name="terms_and_conditions">By continuing you accept our Privacy Policy and Term of Use</string>
     <string name="terms_and_conditions_header">Term of Use</string>
-    <string name="register">Register</string>
-    <string name="login">Login</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_in">Sign In</string>
     <string name="or">OR</string>
     <string name="go_to_login">Already have an account? Login</string>
     <string name="forgot_password">Forgot your password?</string>
@@ -44,4 +45,6 @@
     <string name="add_favorites">Add classroom to Favorites</string>
     <string name="remove_favorites">Remove Classroom from Favorites</string>
     <string name="back_to_home">Back to Home</string>
+    <string name="motto">be present, in the future</string>
+    <string name="add_user">Add User</string>
 </resources>

@@ -73,6 +73,9 @@ import com.example.attendtest.database.roomAndUser.RoomAndUserDao
 import com.example.attendtest.navigation.AppRouter
 import com.example.attendtest.navigation.Screen
 import com.example.attendtest.navigation.SystemBackButtonHandler
+import com.example.iattend.ui.theme.DarkPrimary
+import com.example.iattend.ui.theme.DrawerPrimary
+import com.example.iattend.ui.theme.WhiteColor
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -102,7 +105,8 @@ fun FavoriteRoomScreen(state: RoomState,
             ModalDrawerSheet(
                 modifier = Modifier
                     .width(300.dp)
-                    .fillMaxHeight()
+                    .fillMaxHeight(),
+                drawerContainerColor = DrawerPrimary
             ) {
                 NavigationDrawerHeader(userNewViewModel.emailId)
                 NavigationDrawerBody(navigationDrawerItems = userNewViewModel.navigationItemsList,
@@ -161,12 +165,19 @@ fun FavoriteRoomScreen(state: RoomState,
                                     onEvent(RoomEvent.SortRooms(RoomSortType.ID))
                                     AppRouter.navigateTo(Screen.HomeNewScreen)
                                 }){
-                                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(16.dp)) {
-                                        Icon(imageVector = Icons.Default.Home,
-                                            contentDescription = stringResource(id = R.string.back_to_home)
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier
+                                            .background(DarkPrimary)
+                                            .padding(16.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Home,
+                                            contentDescription = stringResource(id = R.string.back_to_home),
+                                            tint = WhiteColor
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
-                                        Text(text = stringResource(id = R.string.back_to_home))
+                                        Text(text = stringResource(id = R.string.back_to_home), color = WhiteColor)
                                     }
                                 }
                             },

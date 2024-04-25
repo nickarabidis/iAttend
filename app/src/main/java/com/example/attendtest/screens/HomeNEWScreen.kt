@@ -73,6 +73,11 @@ import com.example.attendtest.database.roomAndUser.RoomAndUserDao
 import com.example.attendtest.navigation.AppRouter
 import com.example.attendtest.navigation.Screen
 import com.example.attendtest.navigation.SystemBackButtonHandler
+import com.example.iattend.ui.theme.DarkPrimary
+import com.example.iattend.ui.theme.DrawerPrimary
+import com.example.iattend.ui.theme.Primary
+import com.example.iattend.ui.theme.Secondary
+import com.example.iattend.ui.theme.WhiteColor
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -102,7 +107,8 @@ fun HomeNewScreen(state: RoomState,
             ModalDrawerSheet(
                 modifier = Modifier
                     .width(300.dp)
-                    .fillMaxHeight()
+                    .fillMaxHeight(),
+                drawerContainerColor = DrawerPrimary
             ) {
                 NavigationDrawerHeader(userNewViewModel.emailId)
                 NavigationDrawerBody(navigationDrawerItems = userNewViewModel.navigationItemsList,
@@ -157,15 +163,22 @@ fun HomeNewScreen(state: RoomState,
 
                         Scaffold(
                             floatingActionButton = {
-                                FloatingActionButton(onClick = {
+                                FloatingActionButton(
+                                    onClick = {
                                     onEvent(RoomEvent.ShowAddRoomDialog(userNewViewModel.emailId))
                                 }){
-                                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(16.dp)) {
-                                        Icon(imageVector = Icons.Default.Add,
-                                            contentDescription = stringResource(id = R.string.add_room)
+                                    Row(verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier
+                                            .background(DarkPrimary)
+                                            .padding(16.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Add,
+                                            contentDescription = stringResource(id = R.string.add_room),
+                                            tint = WhiteColor
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
-                                        Text(text = stringResource(id = R.string.add_room))
+                                        Text(text = stringResource(id = R.string.add_room), color = WhiteColor)
                                     }
                                 }
                             },

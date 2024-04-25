@@ -21,6 +21,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.attendtest.R
+import com.example.attendtest.components.BackgroundCredits
+import com.example.attendtest.components.BackgroundWithText
 import com.example.attendtest.components.ButtonComponent
 import com.example.attendtest.components.ClickableLoginTextComponent
 import com.example.attendtest.components.DividerTextComponent
@@ -48,17 +50,21 @@ fun LoginNewScreen(userNewViewModel: UserViewModel = viewModel()){
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
-                .padding(28.dp)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
             ){
 
-                NormalTextComponent(value = stringResource(id = R.string.login))
-                HeadingTextComponent(value = stringResource(id = R.string.welcome))
+//                NormalTextComponent(value = stringResource(id = R.string.sign_in))
+//                HeadingTextComponent(value = stringResource(id = R.string.welcome))
+                BackgroundWithText(
+                    text1 = "iAttend",
+                    text2 = stringResource(id = R.string.motto),
+                    text3 = stringResource(id = R.string.welcome)
+                )
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(40.dp))
 
                 MyTextFieldComponent(labelValue = stringResource(id = R.string.email),
                     onTextSelected = {
@@ -79,7 +85,7 @@ fun LoginNewScreen(userNewViewModel: UserViewModel = viewModel()){
 
                 Spacer(modifier = Modifier.height(40.dp))
 
-                ButtonComponent(value = stringResource(id = R.string.login),
+                ButtonComponent(value = stringResource(id = R.string.sign_in),
                     onButtonClicked ={
                         userNewViewModel.onEvent(UserEvent.LoginButtonClicked)
                     },
@@ -94,6 +100,9 @@ fun LoginNewScreen(userNewViewModel: UserViewModel = viewModel()){
                     AppRouter.navigateTo(Screen.SignUpNewScreen)
                 })
 
+                Spacer(modifier = Modifier.height(80.dp))
+
+                BackgroundCredits(text1 = "© iAttend 2024", text2 = "Georgios Ntolias, Nikolaos Arampidis")
             }
 
         }

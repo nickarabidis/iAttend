@@ -20,6 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.attendtest.R
+import com.example.attendtest.components.BackgroundCredits
+import com.example.attendtest.components.BackgroundWithText
 import com.example.attendtest.components.ButtonComponent
 import com.example.attendtest.components.CheckboxComponent
 import com.example.attendtest.components.ClickableLoginTextComponent
@@ -38,23 +40,25 @@ import com.example.attendtest.navigation.Screen
 @ExperimentalMaterial3Api
 @Composable
 fun SignUpNewScreen(UserViewModel: UserViewModel = viewModel()){
-
     Box(modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center)
     {
-
         Surface(
             color = Color.White,
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
-                .padding(28.dp)
         ){
             Column(
                 modifier = Modifier.fillMaxSize()
             ){
-                NormalTextComponent(value = stringResource(id = R.string.hello))
-                HeadingTextComponent(value = stringResource(id = R.string.create_account))
+//                NormalTextComponent(value = stringResource(id = R.string.hello))
+//                HeadingTextComponent(value = stringResource(id = R.string.create_account))
+                BackgroundWithText(
+                    text1 = "iAttend",
+                    text2 = stringResource(id = R.string.motto),
+                    text3 = stringResource(id = R.string.create_account)
+                )
 
                 Spacer(modifier = Modifier.height(20.dp))
 
@@ -96,9 +100,9 @@ fun SignUpNewScreen(UserViewModel: UserViewModel = viewModel()){
                     }
                 )
 
-                Spacer(modifier =Modifier.height(80.dp))
+                Spacer(modifier =Modifier.height(40.dp))
 
-                ButtonComponent(value = stringResource(id = R.string.register),
+                ButtonComponent(value = stringResource(id = R.string.sign_up),
                     onButtonClicked ={
                         UserViewModel.onEvent(UserEvent.RegisterButtonClicked)
                     },
@@ -110,6 +114,10 @@ fun SignUpNewScreen(UserViewModel: UserViewModel = viewModel()){
                 ClickableLoginTextComponent(tryingToLogin = true, onTextSelected = {
                     AppRouter.navigateTo(Screen.LoginNewScreen)
                 })
+
+                Spacer(modifier =Modifier.height(30.dp))
+
+                BackgroundCredits(text1 = "© iAttend 2024", text2 = "Georgios Ntolias, Nikolaos Arampidis")
             }
         }
 

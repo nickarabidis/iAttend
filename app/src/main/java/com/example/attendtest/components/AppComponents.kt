@@ -2,15 +2,22 @@ package com.example.attendtest.components
 
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -42,10 +49,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -67,6 +76,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.attendtest.R
 import com.example.attendtest.data.NavigationItem
+import com.example.attendtest.database.room.Room
+import com.example.iattend.ui.theme.DarkPrimary
 
 import com.example.iattend.ui.theme.GrayColor
 import com.example.iattend.ui.theme.Primary
@@ -104,10 +115,10 @@ fun RoomHeaderTextComponent(value: String){
         ,
         style = TextStyle(
             fontSize = 20.sp,
-            fontWeight = FontWeight.Normal,
+            fontWeight = FontWeight.Bold,
             fontStyle = FontStyle.Normal
         ),
-        color = colorResource(id = R.color.colorText)
+        color = WhiteColor
     )
 }
 
@@ -138,17 +149,18 @@ fun MyTextFieldComponent(labelValue: String, onTextSelected: (String) -> Unit, e
     OutlinedTextField(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(4.dp)),
+            .padding(horizontal = 28.dp, vertical = 4.dp),
         label = { Text(text = labelValue) },
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = Primary,
             focusedLabelColor = Primary,
-            cursorColor = Primary
+            cursorColor = Primary,
 //            unfocusedTextColor = Primary,
 //            unfocusedBorderColor = Primary,
 //            unfocusedLabelColor = Primary,
 //            unfocusedLeadingIconColor = Primary
         ),
+        shape = RoundedCornerShape(10.dp),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         singleLine = true,
         maxLines = 1,
@@ -182,7 +194,7 @@ fun PasswordTextFieldComponent(labelValue: String, onTextSelected: (String) -> U
     OutlinedTextField(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(4.dp)),
+            .padding(horizontal = 28.dp, vertical = 4.dp),
         label = { Text(text = labelValue) },
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = Primary,
@@ -193,6 +205,7 @@ fun PasswordTextFieldComponent(labelValue: String, onTextSelected: (String) -> U
 //            unfocusedLabelColor = Primary,
 //            unfocusedLeadingIconColor = Primary
         ),
+        shape = RoundedCornerShape(10.dp),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
         singleLine = true,
         keyboardActions = KeyboardActions{
@@ -241,7 +254,8 @@ fun CheckboxComponent(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(56.dp),
+            .heightIn(56.dp)
+            .padding(horizontal = 28.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
 
@@ -302,7 +316,8 @@ fun ButtonComponent(value: String, onButtonClicked: () -> Unit, isEnabled: Boole
                   },
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(48.dp),
+            .heightIn(48.dp)
+            .padding(horizontal = 28.dp, vertical = 4.dp),
         contentPadding = PaddingValues(),
         colors = ButtonDefaults.buttonColors(Color.Transparent),
         shape = RoundedCornerShape(50.dp),
@@ -312,14 +327,17 @@ fun ButtonComponent(value: String, onButtonClicked: () -> Unit, isEnabled: Boole
             .fillMaxWidth()
             .heightIn(48.dp)
             .background(
-                brush = Brush.horizontalGradient(listOf(Secondary, Primary)),
+                color = Color(0xFF004A7F),
                 shape = RoundedCornerShape(50.dp)
             ),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = value,
+            Text(
+                text = value,
                 fontSize = 18.sp,
-                fontWeight = FontWeight.Bold)
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
         }
     }
 }
@@ -327,7 +345,9 @@ fun ButtonComponent(value: String, onButtonClicked: () -> Unit, isEnabled: Boole
 @Composable
 fun DividerTextComponent() {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 28.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
 
@@ -359,7 +379,7 @@ fun DividerTextComponent() {
 fun ClickableLoginTextComponent(tryingToLogin: Boolean = true, onTextSelected: (String) -> Unit) {
     val initialText =
         if (tryingToLogin) "Already have an account? " else "Don’t have an account yet? "
-    val loginText = if (tryingToLogin) "Login" else "Register"
+    val loginText = if (tryingToLogin) stringResource(id = R.string.sign_in) else stringResource(id = R.string.sign_up)
 
     val annotatedString = buildAnnotatedString {
         append(initialText)
@@ -372,7 +392,8 @@ fun ClickableLoginTextComponent(tryingToLogin: Boolean = true, onTextSelected: (
     ClickableText(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 40.dp),
+            .heightIn(min = 40.dp)
+            .padding(horizontal = 28.dp, vertical = 4.dp),
         style = TextStyle(
             fontSize = 21.sp,
             fontWeight = FontWeight.Normal,
@@ -414,7 +435,6 @@ fun UnderLinedTextComponent(value: String){
 }
 
 
-
 @ExperimentalMaterial3Api
 @Composable
 fun AppToolbar(toolbarTitle: String,
@@ -423,10 +443,9 @@ fun AppToolbar(toolbarTitle: String,
     TopAppBar(
         //backgroundColor = Primary,
         colors = topAppBarColors(
-            containerColor = Primary,
-            titleContentColor = Primary
+            containerColor = DarkPrimary,
+            titleContentColor = DarkPrimary
         ),
-
         title = {
             Text(text = toolbarTitle, color = WhiteColor)
         },
@@ -463,8 +482,10 @@ fun NavigationDrawerHeader(value: String?){
         .fillMaxWidth()
         .padding(32.dp)
     ){
-
-        NavigationDrawerText(title = value?:stringResource(R.string.navigation_header), 26.sp)
+        Column {
+            NavigationDrawerText(title = stringResource(R.string.greeting), 40.sp)
+            NavigationDrawerText(title = value?:stringResource(R.string.navigation_header), 26.sp)
+        }
     }
 }
 
@@ -488,15 +509,16 @@ fun NavigationItemRow(item: NavigationItem,
 
     Row(modifier = Modifier
         .fillMaxWidth()
-        .clickable{
+        .clickable {
             onNavigationItemClicked.invoke(item)
-        }.padding(all = 16.dp)
+        }
+        .padding(all = 16.dp)
         //.background(Primary)
     ){
-        Icon(imageVector = item.icon, contentDescription = item.description)
+        Icon(imageVector = item.icon, contentDescription = item.description, modifier = Modifier.size(34.dp))
         Spacer(modifier = Modifier.width(18.dp))
 
-        NavigationDrawerText(title = item.title, 18.sp)
+        NavigationDrawerText(title = item.title, 24.sp)
 
     }
 }
@@ -504,7 +526,7 @@ fun NavigationItemRow(item: NavigationItem,
 
 @Composable
 fun NavigationDrawerText(title:String, textUnit: TextUnit){
-    val shadowOffset = Offset(4f,6f)
+    val shadowOffset = Offset(2f,3f)
 
     Text(text = title, style = TextStyle(
         color = Color.Black,
@@ -512,13 +534,162 @@ fun NavigationDrawerText(title:String, textUnit: TextUnit){
         fontStyle = FontStyle.Normal,
         shadow = Shadow(
             color = Primary,
-            offset = shadowOffset, 2f
+            offset = shadowOffset, 1f
         )
     )
     )
 }
 
+@Composable
+fun BackgroundWithText(text1: String, text2: String, text3: String) {
+    Box(modifier = Modifier
+        .shadow(elevation = 4.dp, spotColor = Color(0x40000000), ambientColor = Color(0x40000000))
+        .fillMaxWidth()
+        .height(186.dp)
+    ) {
+        // Background Image
+        Image(
+            painter = painterResource(id = R.drawable.iattend_bg),
+            contentDescription = "App Background",
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier.fillMaxSize() // Cover the entire box
+        )
 
+        // Text Components
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = text1,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(),
+                style = TextStyle(
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Normal
+                ),
+                color = colorResource(id = R.color.colorWhite),
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = text2,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 40.dp),
+                style = TextStyle(
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Normal,
+                    fontStyle = FontStyle.Normal,
+                ),
+                color = colorResource(id = R.color.colorWhite),
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = text3,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(),
+                style = TextStyle(
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Normal
+                ),
+                color = colorResource(id = R.color.colorWhite),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
 
+@Composable
+fun BackgroundCredits(text1: String, text2: String) {
+    Box(modifier = Modifier
+        .shadow(elevation = 4.dp, spotColor = Color(0x40000000), ambientColor = Color(0x40000000))
+        .fillMaxWidth()
+        .height(186.dp)
+    ) {
+        // Background Image
+        Image(
+            painter = painterResource(id = R.drawable.iattend_bg),
+            contentDescription = "App Background",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillWidth,// Cover the entire box
+        )
 
+        // Text Components
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = text1,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(),
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Normal
+                ),
+                color = colorResource(id = R.color.colorWhite),
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = text2,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 40.dp),
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal,
+                    fontStyle = FontStyle.Normal,
+                ),
+                color = colorResource(id = R.color.colorWhite),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
 
+@Composable
+fun BackgroundRoomText(room: Room) {
+    Box(modifier = Modifier
+        .shadow(elevation = 4.dp, spotColor = Color(0x40000000), ambientColor = Color(0x40000000))
+        .fillMaxWidth()
+        .height(100.dp)
+    ) {
+        // Background Image
+        Image(
+            painter = painterResource(id = R.drawable.iattend_bg),
+            contentDescription = "App Background",
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier.fillMaxSize() // Cover the entire box
+        )
+
+        // Text Components
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            RoomHeaderTextComponent(
+                value = stringResource(id = R.string.room_name) +
+                        ": ${room.roomName}"
+            )
+            RoomHeaderTextComponent(
+                value = stringResource(id = R.string.admin) +
+                        ": ${room.emailAdmin}"
+            )
+        }
+    }
+}

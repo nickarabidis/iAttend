@@ -7,9 +7,11 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -53,8 +55,11 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 import androidx.compose.runtime.*
+import com.example.attendtest.components.BackgroundRoomText
 import com.example.attendtest.database.room.RoomSortType
 import com.example.attendtest.database.roomAndUser.RoomAndUser
+import com.example.iattend.ui.theme.DarkPrimary
+import com.example.iattend.ui.theme.WhiteColor
 import kotlinx.coroutines.launch
 
 
@@ -85,13 +90,22 @@ fun RoomScreen(room: Room,
                     FloatingActionButton(onClick = {
                         onEvent(RoomEvent.ShowAddUserInRoomDialog(room))
                     }) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = stringResource(id = R.string.add_participant)
-                        )
+                        Row(verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .background(DarkPrimary)
+                                .padding(16.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = stringResource(id = R.string.add_user),
+                                tint = WhiteColor
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = stringResource(id = R.string.add_user), color = WhiteColor)
+                        }
                     }
                 },
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(0.dp)
             ) { padding ->
 
                 //Log.d(userNewViewModel.TAG, "state.isAddingRoom= ${state.isAddingRoom}")
@@ -102,29 +116,14 @@ fun RoomScreen(room: Room,
 
 
                 LazyColumn(
-                    contentPadding = padding,
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     item {
-                        Row (modifier = Modifier
-                            .fillMaxWidth()
-                        ) {
-                            RoomHeaderTextComponent(
-                                value = stringResource(id = R.string.room_name) +
-                                        ": ${room.roomName}"
-                            )
-                        }
-                        Row (modifier = Modifier
-                            .fillMaxWidth()
-                        ) {
-                            RoomHeaderTextComponent(
-                                value = stringResource(id = R.string.admin) +
-                                        ": ${room.emailAdmin}"
-                            )
-                        }
+                        BackgroundRoomText(room)
                         Row(
                             modifier = Modifier
+                                .padding(horizontal = 20.dp, vertical = 5.dp)
                                 .fillMaxWidth()
                                 .horizontalScroll(rememberScrollState()),
                             verticalAlignment = Alignment.CenterVertically
@@ -162,6 +161,7 @@ fun RoomScreen(room: Room,
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .padding(horizontal = 20.dp)
                                 .clickable {
                                     ///AppRouter.navigateTo(Screen.RoomScreen(roomAndUsers))
                                 }
