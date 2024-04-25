@@ -545,7 +545,7 @@ fun BackgroundWithText(text1: String, text2: String, text3: String) {
     Box(modifier = Modifier
         .shadow(elevation = 4.dp, spotColor = Color(0x40000000), ambientColor = Color(0x40000000))
         .fillMaxWidth()
-        .height(186.dp)
+        .height(170.dp)
     ) {
         // Background Image
         Image(

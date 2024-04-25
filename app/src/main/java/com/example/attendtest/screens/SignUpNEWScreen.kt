@@ -60,7 +60,7 @@ fun SignUpNewScreen(UserViewModel: UserViewModel = viewModel()){
                     text3 = stringResource(id = R.string.create_account)
                 )
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 MyTextFieldComponent(
                     labelValue = stringResource(id = R.string.first_name),
@@ -100,7 +100,7 @@ fun SignUpNewScreen(UserViewModel: UserViewModel = viewModel()){
                     }
                 )
 
-                Spacer(modifier =Modifier.height(40.dp))
+                Spacer(modifier =Modifier.height(20.dp))
 
                 ButtonComponent(value = stringResource(id = R.string.sign_up),
                     onButtonClicked ={
@@ -115,7 +115,7 @@ fun SignUpNewScreen(UserViewModel: UserViewModel = viewModel()){
                     AppRouter.navigateTo(Screen.LoginNewScreen)
                 })
 
-                Spacer(modifier =Modifier.height(30.dp))
+                Spacer(modifier =Modifier.height(20.dp))
 
                 BackgroundCredits(text1 = "© iAttend 2024", text2 = "Georgios Ntolias, Nikolaos Arampidis")
             }

@@ -1,6 +1,7 @@
 package com.example.attendtest.components
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,27 +9,42 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.attendtest.R
 import com.example.attendtest.data.room.RoomEvent
 import com.example.attendtest.data.room.RoomState
 import com.example.attendtest.data.user.UserViewModel
 import com.example.attendtest.database.room.RoomVisibilityType
+import com.example.iattend.ui.theme.DarkPrimary
+import com.example.iattend.ui.theme.DrawerPrimary
+import com.example.iattend.ui.theme.Primary
 
 @Composable
 fun AddRoomDialog(
@@ -44,12 +60,13 @@ fun AddRoomDialog(
             onEvent(RoomEvent.HideAddRoomDialog)
         },
         title = {
-            Text(text = stringResource(id = R.string.add_room))
+            Text(text = stringResource(id = R.string.add_room), fontWeight = FontWeight.SemiBold)
         },
         text = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ){
+
                 TextField(
                     value = state.roomName,
                     onValueChange = {
@@ -57,7 +74,8 @@ fun AddRoomDialog(
                     },
                     placeholder = {
                         Text(text = stringResource(id = R.string.room_name))
-                    }
+                    },
+                    shape = RoundedCornerShape(8.dp),
                 )
                 TextField(
                     value = state.password,
@@ -66,26 +84,31 @@ fun AddRoomDialog(
                     },
                     placeholder = {
                         Text(text = stringResource(id = R.string.password))
-                    }
+                    },
+                    shape = RoundedCornerShape(12.dp)
                 )
                 Column {
                     Row {
                         Column {
                             Text(
                                 text = stringResource(id = R.string.change_visibility),
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.SemiBold,
                                 modifier = Modifier
-                                    .fillMaxWidth(),
-                                textAlign = TextAlign.Center
+                                    .fillMaxWidth()
+                                    .padding(vertical = 10.dp),
+                                textAlign = TextAlign.Center,
+                                fontSize = 16.sp,
+                                color = Color.Black
                             )
                         }
                     }
-                    Row (
+                    Column (
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.Start
                     ) {
                         RoomVisibilityType.entries.forEach { visibilityType ->
-                            Column(
+                            Row(
                                 modifier = Modifier
                                     .clickable{
                                         when (visibilityType) {
@@ -106,7 +129,8 @@ fun AddRoomDialog(
                                             }
                                         }
                                     },
-                                verticalArrangement = Arrangement.Center
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
                             ){
                                 RadioButton(
                                     selected = state.visibilityType == visibilityType,
@@ -147,14 +171,15 @@ fun AddRoomDialog(
                                 }
 
                                 Row(
-                                    verticalAlignment = Alignment.CenterVertically
+                                    verticalAlignment = Alignment.CenterVertically,
                                 ) {
                                     Icon(
                                         painter = painterResource(id = visibilityTypeIcon),
-                                        contentDescription = stringResource(id = visibilityTypeDesc)
+                                        contentDescription = stringResource(id = visibilityTypeDesc),
+                                        tint = Color.Black
                                     )
-                                    Spacer(modifier = Modifier.width(2.dp))
-                                    Text(text = visibilityType.name)
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Text(text = visibilityType.name, fontSize = 18.sp, color = Color.Black)
                                 }
 
                             }
@@ -175,18 +200,31 @@ fun AddRoomDialog(
         confirmButton = {
             Box(
                 modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.CenterEnd
+                contentAlignment = Alignment.Center
+
             ){
-                Button(onClick = {
+                Button(colors = ButtonDefaults.buttonColors(Color.Transparent),onClick = {
                     onEvent(RoomEvent.SaveRoom(userNewViewModel.emailId))
                 }){
-                    Text(text = "Save")
+                    Box(
+                        modifier = Modifier
+                            .heightIn(50.dp)
+                            .fillMaxWidth()
+                            .background(
+                                color = Color(0xFF004A7F),
+                                shape = RoundedCornerShape(50.dp)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "Save", fontSize = 16.sp)
+                    }
                 }
             }
         },
         dismissButton = {
             //onEvent(RoomEvent.HideAddUserDialog)
         },
+        containerColor = DrawerPrimary,
         modifier = Modifier
 
     )

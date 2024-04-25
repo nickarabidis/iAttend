@@ -1,6 +1,7 @@
 package com.example.attendtest.components
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,9 +9,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -20,15 +25,18 @@ import androidx.compose.runtime.Composable
 // see
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.attendtest.R
 import com.example.attendtest.data.room.RoomEvent
 import com.example.attendtest.data.room.RoomState
 import com.example.attendtest.database.room.RoomVisibilityType
+import com.example.iattend.ui.theme.DrawerPrimary
 
 @Composable
 fun EditRoomDialog(
@@ -41,7 +49,7 @@ fun EditRoomDialog(
             onEvent(RoomEvent.HideEditRoomDialog)
         },
         title = {
-            Text(text = "Edit Room")
+            Text(text = "Edit Room", fontWeight = FontWeight.SemiBold)
         },
         text = {
             Column(
@@ -58,7 +66,6 @@ fun EditRoomDialog(
                 )
                 Log.d("visibility type: ", "${state.visibilityType}")
 
-                // TODO: appear only if room's visibilityType is passwordNeeded!
                 TextField(
                         value = state.password,
                         onValueChange = {
@@ -66,37 +73,32 @@ fun EditRoomDialog(
                         },
                         placeholder = {
                             Text(text = "Password")
-                        }
+                        },
+                        shape = RoundedCornerShape(12.dp)
                     )
 
-                // not used anymore (set email admin)
-//                TextField(
-//                    value = state.emailAdmin,
-//                    onValueChange = {
-//                        onEvent(RoomEvent.SetEmailAdmin(it))
-//                    },
-//                    placeholder = {
-//                        Text(text = "EmailAdmin")
-//                    }
-//                )
                 Column {
                     Row {
                         Column {
                             Text(
                                 text = "Change Visibility",
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.SemiBold,
                                 modifier = Modifier
-                                    .fillMaxWidth(),
-                                textAlign = TextAlign.Center
+                                    .fillMaxWidth()
+                                    .padding(vertical = 10.dp),
+                                textAlign = TextAlign.Center,
+                                fontSize = 16.sp,
+                                color = Color.Black
                             )
                         }
                     }
-                    Row (
+                    Column (
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.Start
                     ) {
                         RoomVisibilityType.entries.forEach { visibilityType ->
-                            Column(
+                            Row(
                                 modifier = Modifier
                                     .clickable{
                                         when (visibilityType) {
@@ -117,7 +119,8 @@ fun EditRoomDialog(
                                             }
                                         }
                                     },
-                                    verticalArrangement = Arrangement.Center
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
                             ){
                                 RadioButton(
                                     selected = state.visibilityType == visibilityType,
@@ -162,10 +165,11 @@ fun EditRoomDialog(
                                 ) {
                                     Icon(
                                         painter = painterResource(id = visibilityTypeIcon),
-                                        contentDescription = stringResource(id = visibilityTypeDesc)
+                                        contentDescription = stringResource(id = visibilityTypeDesc),
+                                        tint = Color.Black
                                     )
-                                    Spacer(modifier = Modifier.width(2.dp))
-                                    Text(text = visibilityType.name)
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Text(text = visibilityType.name, fontSize = 18.sp, color = Color.Black)
                                 }
 
                             }
@@ -179,17 +183,29 @@ fun EditRoomDialog(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.CenterEnd
             ){
-                Button(onClick = {
+                Button(colors = ButtonDefaults.buttonColors(Color.Transparent),onClick = {
 //                    Log.d("SELECTEDVISIBILITYTYPE", "$selectedVisibilityType")
                     onEvent(RoomEvent.SaveEdits)
                 }){
-                    Text(text = "Save Changes")
+                    Box(
+                        modifier = Modifier
+                            .heightIn(50.dp)
+                            .fillMaxWidth()
+                            .background(
+                                color = Color(0xFF004A7F),
+                                shape = RoundedCornerShape(50.dp)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "Save Changes", fontSize = 16.sp)
+                    }
                 }
             }
         },
         dismissButton = {
             //onEvent(RoomEvent.HideAddRoomDialog)
         },
+        containerColor = DrawerPrimary,
         modifier = Modifier
 
     )

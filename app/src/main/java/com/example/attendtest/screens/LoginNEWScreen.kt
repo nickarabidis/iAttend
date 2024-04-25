@@ -79,7 +79,7 @@ fun LoginNewScreen(userNewViewModel: UserViewModel = viewModel()){
                     errorStatus = userNewViewModel._state.value.passwordError
                 )
 
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
                 UnderLinedTextComponent(value = stringResource(id = R.string.forgot_password))
 
@@ -100,7 +100,7 @@ fun LoginNewScreen(userNewViewModel: UserViewModel = viewModel()){
                     AppRouter.navigateTo(Screen.SignUpNewScreen)
                 })
 
-                Spacer(modifier = Modifier.height(80.dp))
+                Spacer(modifier = Modifier.height(60.dp))
 
                 BackgroundCredits(text1 = "© iAttend 2024", text2 = "Georgios Ntolias, Nikolaos Arampidis")
             }
