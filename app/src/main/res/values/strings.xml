@@ -10,8 +10,8 @@
     <string name="password">Password</string>
     <string name="hide_password">Hide Password</string>
     <string name="show_password">Show Password</string>
-    <string name="terms_and_conditions">By continuing you accept our Privacy Policy and Term of Use</string>
-    <string name="terms_and_conditions_header">Term of Use</string>
+    <string name="terms_and_conditions">By signing up, you abide by our Privacy Policy and Terms of Use</string>
+    <string name="terms_and_conditions_header">Terms of Use</string>
     <string name="sign_up">Sign Up</string>
     <string name="sign_in">Sign In</string>
     <string name="or">OR</string>
@@ -47,4 +47,5 @@
     <string name="back_to_home">Back to Home</string>
     <string name="motto">be present, in the future</string>
     <string name="add_user">Add User</string>
+    <string name="wip_terms">There are no Terms of Use and Privacy Policy as of 25/4/2024 (due to the application\'s offline demo state).\nAn Update to this form will be present whenever the application uses \nany sort of data and personal info.</string>
 </resources>
