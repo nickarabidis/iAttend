@@ -49,7 +49,7 @@ fun EditRoomDialog(
             onEvent(RoomEvent.HideEditRoomDialog)
         },
         title = {
-            Text(text = "Edit Room", fontWeight = FontWeight.SemiBold)
+            Text(text = stringResource(id = R.string.edit_room), fontWeight = FontWeight.SemiBold)
         },
         text = {
             Column(
@@ -61,7 +61,7 @@ fun EditRoomDialog(
                         onEvent(RoomEvent.SetRoomName(it))
                     },
                     placeholder = {
-                        Text(text = "Room Name")
+                        Text(text = stringResource(id = R.string.room_name))
                     }
                 )
                 Log.d("visibility type: ", "${state.visibilityType}")
@@ -72,7 +72,7 @@ fun EditRoomDialog(
                             onEvent(RoomEvent.SetPassword(it))
                         },
                         placeholder = {
-                            Text(text = "Password")
+                            Text(text = stringResource(id = R.string.password))
                         },
                         shape = RoundedCornerShape(12.dp)
                     )
@@ -81,7 +81,7 @@ fun EditRoomDialog(
                     Row {
                         Column {
                             Text(
-                                text = "Change Visibility",
+                                text = stringResource(id = R.string.change_visibility),
                                 fontWeight = FontWeight.SemiBold,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -142,6 +142,7 @@ fun EditRoomDialog(
                                         }
                                     }
                                 )
+
                                 val visibilityTypeIcon = when (visibilityType.name) {
                                     RoomVisibilityType.VISIBLE.toString() -> R.drawable.visibility
                                     RoomVisibilityType.PASSWORD.toString() -> R.drawable.visibility_lock
@@ -169,7 +170,21 @@ fun EditRoomDialog(
                                         tint = Color.Black
                                     )
                                     Spacer(modifier = Modifier.width(10.dp))
-                                    Text(text = visibilityType.name, fontSize = 18.sp, color = Color.Black)
+
+                                    val visibilityText = when (visibilityType.name) {
+                                        RoomVisibilityType.VISIBLE.toString() -> R.string.visible
+                                        RoomVisibilityType.PASSWORD.toString() -> R.string.password_needed
+                                        RoomVisibilityType.INVISIBLE.toString() -> R.string.invisible
+                                        else -> {
+                                            Log.e("Type name description error: ", "can't find visibilityType")
+                                        }
+                                    }
+
+                                    Text(
+                                        text = stringResource(id = visibilityText),
+                                        fontSize = 18.sp,
+                                        color = Color.Black
+                                    )
                                 }
 
                             }
@@ -197,7 +212,7 @@ fun EditRoomDialog(
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(text = "Save Changes", fontSize = 16.sp)
+                        Text(text = stringResource(id = R.string.save_changes), fontSize = 16.sp)
                     }
                 }
             }

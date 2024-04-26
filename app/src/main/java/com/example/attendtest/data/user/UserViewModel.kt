@@ -6,8 +6,10 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.attendtest.R
 import com.example.attendtest.data.NavigationItem
 import com.example.attendtest.data.rules.Validator
 import com.example.attendtest.database.user.User
@@ -344,21 +346,21 @@ class UserViewModel (
         }
     }
 
-    val navigationItemsList = listOf<NavigationItem>(
+    val navigationItemsList = listOf(
         NavigationItem(
-            title = "Home",
+            titleResId = R.string.home,
             icon = Icons.Default.Home,
             description = "Home Screen",
             itemId = "homeScreen"
         ),
         NavigationItem(
-            title = "Settings",
+            titleResId = R.string.settings,
             icon = Icons.Default.Settings,
             description = "Settings Screen",
             itemId = "settingsScreen"
         ),
         NavigationItem(
-            title = "Favorites",
+            titleResId = R.string.favorites,
             icon = Icons.Default.Favorite,
             description = "Favorite Screen",
             itemId = "favoriteScreen"

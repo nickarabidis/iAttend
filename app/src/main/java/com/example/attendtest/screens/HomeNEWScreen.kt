@@ -113,15 +113,15 @@ fun HomeNewScreen(state: RoomState,
                 NavigationDrawerHeader(userNewViewModel.emailId)
                 NavigationDrawerBody(navigationDrawerItems = userNewViewModel.navigationItemsList,
                     onNavigationItemClicked = {
-                        when (it.title) {
-                            "Favorites" -> {
+                        when (it.titleResId) {
+                            R.string.favorites -> {
                                 onEvent(RoomEvent.SortRooms(RoomSortType.FAVORITES))
                                 AppRouter.navigateTo(Screen.FavoriteRoomScreen)
                             }
                             // "Settings" -> TODO("Add settings screen for user")
                         }
                         Log.d("ComingHere", "inside_onNavigationItemClicked")
-                        Log.d("ComingHere", "${it.itemId} ${it.title}")
+                        Log.d("ComingHere", "${it.itemId} ${it.titleResId}")
                     })
             }
 

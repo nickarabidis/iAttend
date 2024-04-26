@@ -275,10 +275,10 @@ fun CheckboxComponent(
 
 @Composable
 fun ClickableTextComponent(value: String, onTextSelected: (String) -> Unit) {
-    val initialText = "By continuing you accept our "
-    val privacyPolicyText = "Privacy Policy"
-    val andText = " and "
-    val termsAndConditionsText = "Term of Use"
+    val initialText = stringResource(id = R.string.by_signing_up)
+    val privacyPolicyText = stringResource(id = R.string.privacy_policy)
+    val andText = stringResource(id = R.string.and)
+    val termsAndConditionsText = stringResource(id = R.string.terms_of_use)
 
     val annotatedString = buildAnnotatedString {
         append(initialText)
@@ -378,7 +378,7 @@ fun DividerTextComponent() {
 @Composable
 fun ClickableLoginTextComponent(tryingToLogin: Boolean = true, onTextSelected: (String) -> Unit) {
     val initialText =
-        if (tryingToLogin) "Already have an account? " else "Don’t have an account yet? "
+        if (tryingToLogin) stringResource(id = R.string.already_account) else stringResource(id = R.string.dont_have_account)
     val loginText = if (tryingToLogin) stringResource(id = R.string.sign_in) else stringResource(id = R.string.sign_up)
 
     val annotatedString = buildAnnotatedString {
@@ -483,8 +483,8 @@ fun NavigationDrawerHeader(value: String?){
         .padding(32.dp)
     ){
         Column {
-            NavigationDrawerText(title = stringResource(R.string.greeting), 40.sp)
-            NavigationDrawerText(title = value?:stringResource(R.string.navigation_header), 26.sp)
+            NavigationDrawerText(titleResId = R.string.greeting, 40.sp)
+            NavigationDrawerEmailText(title = value?:stringResource(R.string.navigation_header), 26.sp)
         }
     }
 }
@@ -518,14 +518,30 @@ fun NavigationItemRow(item: NavigationItem,
         Icon(imageVector = item.icon, contentDescription = item.description, modifier = Modifier.size(34.dp))
         Spacer(modifier = Modifier.width(18.dp))
 
-        NavigationDrawerText(title = item.title, 24.sp)
+        NavigationDrawerText(titleResId = item.titleResId, 24.sp)
 
     }
 }
 
 
 @Composable
-fun NavigationDrawerText(title:String, textUnit: TextUnit){
+fun NavigationDrawerText(titleResId: Int, textUnit: TextUnit){
+    val shadowOffset = Offset(2f,3f)
+
+    Text(text = stringResource(id = titleResId), style = TextStyle(
+        color = Color.Black,
+        fontSize = textUnit,
+        fontStyle = FontStyle.Normal,
+        shadow = Shadow(
+            color = Primary,
+            offset = shadowOffset, 1f
+        )
+    )
+    )
+}
+
+@Composable
+fun NavigationDrawerEmailText(title: String, textUnit: TextUnit){
     val shadowOffset = Offset(2f,3f)
 
     Text(text = title, style = TextStyle(

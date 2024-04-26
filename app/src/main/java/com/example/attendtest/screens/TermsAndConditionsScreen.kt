@@ -40,7 +40,7 @@ fun TermsAndConditionsScreen(){
             Spacer(modifier = Modifier.height(50.dp))
             NormalTextComponent(value = "iAttend 2024")
             Image(painterResource(id = R.drawable.iattend_logo), contentDescription = "Application Logo", modifier = Modifier.fillMaxWidth())
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(25.dp))
             Text(text = "Georgios Ntolias", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
             Text(text = "Nikolaos Arampidis", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
         }

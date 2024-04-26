@@ -30,9 +30,9 @@
     <string name="remove_participant">Remove Participant</string>
     <string name="room_id">Classroom ID</string>
     <string name="add_room">Add Classroom</string>
-    <string name="turn_to_visible" translatable="false">Turn Classroom to Visible</string>
-    <string name="turn_to_password_needed" translatable="false">Turn Classroom to Visible with Password</string>
-    <string name="turn_to_invisible" translatable="false">Turn Classroom to Invisible</string>
+    <string name="turn_to_visible">Turn Classroom to Visible</string>
+    <string name="turn_to_password_needed">Turn Classroom to Visible with Password</string>
+    <string name="turn_to_invisible">Turn Classroom to Invisible</string>
     <string name="sort_room_name">Class Name</string>
     <string name="sort_email_admin">Class Admin</string>
     <string name="sort_id">Class ID</string>
@@ -48,4 +48,19 @@
     <string name="motto">be present, in the future</string>
     <string name="add_user">Add User</string>
     <string name="wip_terms">There are no Terms of Use and Privacy Policy as of 25/4/2024 (due to the application\'s offline demo state). An Update to this form will be present whenever the application uses  any sort of data and personal info.</string>
+    <string name="settings">Settings</string>
+    <string name="favorites">Favorites</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="visible">Visible</string>
+    <string name="invisible">Invisible</string>
+    <string name="password_needed">Password</string>
+    <string name="save">Save</string>
+    <string name="user_email">User email</string>
+    <string name="dont_save">Cancel</string>
+    <string name="already_account">Already have an account? </string>
+    <string name="dont_have_account">Don\'t have an account yet? </string>
+    <string name="by_signing_up">"By signing up, you abide by our "</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="and">" and "</string>
+    <string name="terms_of_use">Terms of Use</string>
 </resources>

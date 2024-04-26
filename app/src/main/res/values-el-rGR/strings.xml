@@ -44,4 +44,22 @@
     <string name="motto">γίνε παρών, στο μέλον!</string>
     <string name="add_user">Προσθήκη Χρήστη</string>
     <string name="wip_terms">Δεν υπάρχουν Όροι Χρήσης και Πολιτική Απορρήτου από τις 25/4/2024 (λόγω της κατάστασης επίδειξης εκτός σύνδεσης της εφαρμογής). Μια ενημέρωση σε αυτήν τη φόρμα θα υπάρχει κάθε φορά που η εφαρμογή χρησιμοποιεί οποιοδήποτε είδος δεδομένων και προσωπικών πληροφοριών.</string>
+    <string name="settings">Ρυθμίσεις</string>
+    <string name="favorites">Αγαπημένα</string>
+    <string name="save_changes">Αποθήκευση Αλλαγών</string>
+    <string name="visible">Ορατή</string>
+    <string name="invisible">Μη-ορατή</string>
+    <string name="password_needed">Ορατή με Κωδικό</string>
+    <string name="turn_to_visible">Μετατροπή τάξης σε Ορατή</string>
+    <string name="turn_to_password_needed">Μετατροπή τάξης σε Ορατή με Κωδικό</string>
+    <string name="turn_to_invisible">Μετατροπή τάξης σε Μη-ορατή</string>
+    <string name="save">Αποθήκευση</string>
+    <string name="user_email">email χρήστη</string>
+    <string name="dont_save">Ακύρωση</string>
+    <string name="already_account">"Έχετε ήδη λογαριασμό; "</string>
+    <string name="dont_have_account">"Δεν έχετε λογαριασμό; "</string>
+    <string name="by_signing_up">"Κάνοντας εγγραφή, συμφωνείτε στη "</string>
+    <string name="privacy_policy">Πολιτική Απορρήτου</string>
+    <string name="and">" και τους "</string>
+    <string name="terms_of_use">Όρους Χρήσης</string>
 </resources>

@@ -170,6 +170,15 @@ fun AddRoomDialog(
                                     }
                                 }
 
+                                val visibilityText = when (visibilityType.name) {
+                                    RoomVisibilityType.VISIBLE.toString() -> R.string.visible
+                                    RoomVisibilityType.PASSWORD.toString() -> R.string.password_needed
+                                    RoomVisibilityType.INVISIBLE.toString() -> R.string.invisible
+                                    else -> {
+                                        Log.e("Type name description error: ", "can't find visibilityType")
+                                    }
+                                }
+
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                 ) {
@@ -179,7 +188,11 @@ fun AddRoomDialog(
                                         tint = Color.Black
                                     )
                                     Spacer(modifier = Modifier.width(10.dp))
-                                    Text(text = visibilityType.name, fontSize = 18.sp, color = Color.Black)
+                                    Text(
+                                        text = stringResource(id = visibilityText),
+                                        fontSize = 18.sp,
+                                        color = Color.Black
+                                    )
                                 }
 
                             }
@@ -216,7 +229,7 @@ fun AddRoomDialog(
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(text = "Save", fontSize = 16.sp)
+                        Text(text = stringResource(id = R.string.save), fontSize = 16.sp)
                     }
                 }
             }

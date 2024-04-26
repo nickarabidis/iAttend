@@ -18,10 +18,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.attendtest.R
 import com.example.attendtest.data.room.RoomEvent
 import com.example.attendtest.data.room.RoomState
 import com.example.attendtest.data.user.UserViewModel
@@ -39,7 +41,7 @@ fun AddUserInRoomDialog(
             onEvent(RoomEvent.HideAddUserInRoomDialog)
         },
         title = {
-            Text(text = "Add User In Room", fontWeight = FontWeight.SemiBold)
+            Text(text = stringResource(id = R.string.add_user), fontWeight = FontWeight.SemiBold)
         },
         text = {
             Column(
@@ -51,7 +53,7 @@ fun AddUserInRoomDialog(
                         onEvent(RoomEvent.SetEmailOfUser(it))
                     },
                     placeholder = {
-                        Text(text = "EmailOfUser")
+                        Text(text = stringResource(id = R.string.user_email))
                     },
                     shape = RoundedCornerShape(12.dp)
                 )
@@ -78,9 +80,9 @@ fun AddUserInRoomDialog(
                         contentAlignment = Alignment.Center
                     ) {
                         if (state.emailOfUser != userNewViewModel.emailId) {
-                            Text(text = "Save", fontSize = 16.sp)
+                            Text(text = stringResource(id = R.string.save), fontSize = 16.sp)
                         } else {
-                            Text(text = "Don't Save", fontSize = 16.sp)
+                            Text(text = stringResource(id = R.string.dont_save), fontSize = 16.sp)
                         }
                     }
                 }
