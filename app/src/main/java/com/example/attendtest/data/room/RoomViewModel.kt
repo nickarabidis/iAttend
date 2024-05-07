@@ -5,8 +5,6 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.attendtest.data.user.UserViewModel
 import com.example.attendtest.database.room.Room
 import com.example.attendtest.database.room.RoomDao
 import com.example.attendtest.database.room.RoomSortType
@@ -17,6 +15,8 @@ import com.example.attendtest.database.roomAndUser.RoomAndUser
 import com.example.attendtest.database.roomAndUser.RoomAndUserDao
 import com.example.attendtest.database.roomAndUser.RoomAndUserSortType
 import com.example.attendtest.database.user.UserDao
+import com.example.attendtest.database.userSettings.Languages
+import com.example.attendtest.database.userSettings.Themes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +35,7 @@ class RoomViewModel (
     private val dao: RoomDao,
     private val roomAndUserDao: RoomAndUserDao,
     private val userDao: UserDao,
-    private val roomAndFavoritesDao: RoomAndFavoritesDao
+    private val roomAndFavoritesDao: RoomAndFavoritesDao,
 ) : ViewModel() {
 
     val TAG = RoomViewModel::class.simpleName
@@ -49,6 +49,8 @@ class RoomViewModel (
     //private val _sortTypeRoomsAndUsers = MutableStateFlow(RoomAndUserSortType.USER_EMAIL)
 
     private val _sortType = MutableStateFlow(RoomSortType.ID)
+
+    private val _themes = MutableStateFlow(Themes.LIGHT)
 
     private val _favoriteRoomIds = MutableStateFlow<List<Long>>(emptyList())
     val favoriteRoomIds: StateFlow<List<Long>> = _favoriteRoomIds
@@ -288,6 +290,36 @@ class RoomViewModel (
 //                }
 //                saveFavoriteRoomIds(context, updatedFavoriteRoomIds)
 //                _favoriteRoomIds.value = updatedFavoriteRoomIds
+            }
+
+            is RoomEvent.UpdateLanguage -> {
+                _state.update {
+                    it.copy(
+                        languageChosen = event.language
+                    )
+                }
+                val userEmail = event.userEmail
+                val language = event.language
+                Log.d(TAG, "userEmail: $userEmail")
+
+                viewModelScope.launch {
+                    userDao.updateLanguage(userEmail, language.name)
+                }
+            }
+
+            is RoomEvent.UpdateTheme -> {
+                _state.update {
+                    it.copy(
+                        themeChosen = event.theme
+                    )
+                }
+                val userEmail = event.userEmail
+                val theme = event.theme
+                Log.d(TAG, "userEmail: $userEmail")
+
+                viewModelScope.launch {
+                    userDao.updateTheme(userEmail, theme.name)
+                }
             }
 
             is RoomEvent.SaveEdits -> {
@@ -860,6 +892,18 @@ class RoomViewModel (
                 _sortType.value = event.sortType
             }
 
+            is RoomEvent.SetLanguage -> {
+                _state.update { it.copy(
+                    languageChosen = event.language
+                )}
+            }
+
+            is RoomEvent.SetTheme -> {
+                _state.update { it.copy(
+                    themeChosen = event.theme
+                )}
+            }
+
             is RoomEvent.SortRoomsAndUsers -> {
                 _roomAndUserSortType.value = event.sortTypeRoomAndUser
             }
@@ -1277,4 +1321,24 @@ class RoomViewModel (
         }
 
     }
+
+//    fun changeLanguage(userEmail: String, language: String) {
+//        // Update UI language using Android's localization system
+//        val locale = when (language) {
+//            Languages.EN.name -> Locale.ENGLISH
+//            Languages.GR.name -> Locale("el", "GR")
+//            else -> {"ERROR!"}
+//        }
+//        Locale.setDefault(locale as Locale)
+//        val config = Configuration(application.resources.configuration)
+//        config.setLocale(locale)
+//        application.resources.updateConfiguration(config, application.resources.displayMetrics)
+//
+//        // Update UserSettings in the database
+//        viewModelScope.launch {
+//            val userSettings = userDao.getUserSettings(userEmail)
+//            userDao.setLanguageOfUser(userSettings.userEmail, language)
+//            userDao.upsertUserSettings(userSettings)
+//        }
+//    }
 }

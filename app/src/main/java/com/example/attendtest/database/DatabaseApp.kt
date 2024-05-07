@@ -12,10 +12,11 @@ import com.example.attendtest.database.roomAndUser.RoomAndUser
 import com.example.attendtest.database.roomAndUser.RoomAndUserDao
 import com.example.attendtest.database.user.User
 import com.example.attendtest.database.user.UserDao
+import com.example.attendtest.database.userSettings.UserSettings
 
 
 @Database(
-    entities = [User::class, Room::class, RoomAndUser::class, RoomAndFavorites::class],
+    entities = [User::class, Room::class, RoomAndUser::class, RoomAndFavorites::class, UserSettings::class],
     version = 1
 )
 @TypeConverters(Converters::class)

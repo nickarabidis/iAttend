@@ -17,6 +17,7 @@ import com.example.attendtest.screens.FavoriteRoomScreen
 import com.example.attendtest.screens.HomeNewScreen
 import com.example.attendtest.screens.LoginNewScreen
 import com.example.attendtest.screens.RoomScreen
+import com.example.attendtest.screens.SettingsScreen
 import com.example.attendtest.screens.TermsAndConditionsScreen
 
 
@@ -51,6 +52,9 @@ fun App(state: RoomState,
                 is Screen.FavoriteRoomScreen -> {
 //                    onEvent(RoomEvent.SortRooms(RoomSortType.FAVORITES))
                     FavoriteRoomScreen(state, onEvent)
+                }
+                is Screen.SettingsScreen -> {
+                    SettingsScreen(state, onEvent)
                 }
             }
         }

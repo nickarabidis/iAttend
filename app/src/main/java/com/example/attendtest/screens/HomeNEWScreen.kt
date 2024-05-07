@@ -97,6 +97,20 @@ fun HomeNewScreen(state: RoomState,
 
     userNewViewModel.getUserData()
 
+    // Change Lang
+    if (userNewViewModel.language == "EN") {
+
+    } else if (userNewViewModel.language == "GR") {
+
+    }
+
+    // Change Theme
+    if (userNewViewModel.theme == "LIGHT") {
+
+    } else if (userNewViewModel.theme == "DARK") {
+
+    }
+
     // Collect the favorite room IDs from RoomViewModel
 //    val favoriteRoomIds by remember { roomNewViewModel.loadFavoriteRoomIds(LocalContext.current) }.collectAsState(emptyList())
 
@@ -118,7 +132,9 @@ fun HomeNewScreen(state: RoomState,
                                 onEvent(RoomEvent.SortRooms(RoomSortType.FAVORITES))
                                 AppRouter.navigateTo(Screen.FavoriteRoomScreen)
                             }
-                            // "Settings" -> TODO("Add settings screen for user")
+                            R.string.settings -> {
+                                AppRouter.navigateTo(Screen.SettingsScreen)
+                            }
                         }
                         Log.d("ComingHere", "inside_onNavigationItemClicked")
                         Log.d("ComingHere", "${it.itemId} ${it.titleResId}")
@@ -432,6 +448,51 @@ fun HomeNewScreen(state: RoomState,
 
 @Composable
 fun FavoriteAndUnfavoriteIcon(
+    viewModel: RoomViewModel,
+    userEmail: String,
+    room: Room
+) {
+    val favorite = remember(userEmail) { mutableStateOf(false) }
+    var roomAndFavorite: RoomAndFavorites? = null
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(userEmail, room) {
+        val fetchedIsFavorite = viewModel.getIsFavorite(userEmail, room.id)
+        favorite.value = fetchedIsFavorite
+        roomAndFavorite = viewModel.getRoomAndFavorite(userEmail, room.id)
+    }
+
+    IconButton(onClick = {
+        scope.launch {
+            if (!favorite.value) {
+                viewModel.favoriteRoom(userEmail, room)
+            } else {
+                viewModel.unfavoriteRoom(userEmail, room)
+            }
+            // After the event, update the favorite value
+            val fetchedIsFavorite = viewModel.getIsFavorite(userEmail, room.id)
+            favorite.value = fetchedIsFavorite
+        }
+    }) {
+        when (favorite.value) {
+            true -> {
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = stringResource(id = R.string.add_favorites)
+                )
+            }
+            else -> {
+                Icon(
+                    imageVector = Icons.Default.FavoriteBorder,
+                    contentDescription = stringResource(id = R.string.remove_favorites)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun LanguageButton(
     viewModel: RoomViewModel,
     userEmail: String,
     room: Room

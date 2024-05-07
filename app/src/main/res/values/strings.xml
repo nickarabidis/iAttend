@@ -63,4 +63,13 @@
     <string name="privacy_policy">Privacy Policy</string>
     <string name="and">" and "</string>
     <string name="terms_of_use">Terms of Use</string>
+    <string name="settings_language_desc">Changes the application\'s language</string>
+    <string name="settings_theme_desc">Changes the application\'s theme</string>
+    <string name="setting_desc">Description</string>
+    <string name="setting_language">Language</string>
+    <string name="setting_theme">Theme</string>
+    <string name="gr">Greek</string>
+    <string name="en">English</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
 </resources>

@@ -15,6 +15,9 @@ import com.example.attendtest.data.rules.Validator
 import com.example.attendtest.database.user.User
 import com.example.attendtest.database.user.UserDao
 import com.example.attendtest.database.user.userSortType
+import com.example.attendtest.database.userSettings.Languages
+import com.example.attendtest.database.userSettings.Themes
+import com.example.attendtest.database.userSettings.UserSettings
 import com.example.attendtest.navigation.AppRouter
 import com.example.attendtest.navigation.Screen
 import kotlinx.coroutines.Dispatchers
@@ -106,6 +109,28 @@ class UserViewModel (
 
             }
 
+            is UserEvent.SaveSettings -> {
+                val email = state.value.email
+                val language = state.value.languageChosen.name
+                val theme = state.value.themeChosen.name
+
+                val userSettings = UserSettings(
+                    userEmail = email,
+                    language = language,
+                    theme = theme
+                )
+                viewModelScope.launch{
+                    dao.upsertUserSettings(userSettings)
+                }
+                _state.update { it.copy(
+                    email = "",
+                    themeChosen = Themes.LIGHT,
+                    languageChosen = Languages.EN,
+                    currentUser = email
+                ) }
+
+            }
+
             is UserEvent.SetFirstName ->{
                 _state.update { it.copy(
                     firstName = event.firstName
@@ -126,6 +151,19 @@ class UserViewModel (
                     password = event.password
                 )}
             }
+            is UserEvent.SetLanguage ->{
+                _state.update { it.copy(
+                    languageChosen = event.language
+                )}
+            }
+            is UserEvent.SetTheme ->{
+                _state.update { it.copy(
+                    themeChosen = event.theme
+                )}
+
+                Log.d("ChangedThemeTo", event.theme.name)
+            }
+
 //            UserEvent.ShowAddRoomDialog ->{
 //                _state.update { it.copy(
 //                    isAddingUser = true
@@ -237,6 +275,15 @@ class UserViewModel (
         }
     }
 
+    private fun createUserSettings(email: String, language: Languages, theme: Themes) {
+        viewModelScope.launch {
+            onEvent(UserEvent.SetEmail(email))
+            onEvent(UserEvent.SetLanguage(language))
+            onEvent(UserEvent.SetTheme(theme))
+            onEvent(UserEvent.SaveSettings)
+        }
+    }
+
     private fun signUpDatabase(){
         Log.d(TAG, "Inside_signUp")
         //printState()
@@ -250,6 +297,12 @@ class UserViewModel (
             lastName = state.value.lastName,
             email = state.value.email,
             password = state.value.password
+        )
+
+        createUserSettings(
+            email = state.value.email,
+            language = state.value.languageChosen,
+            theme = state.value.themeChosen
         )
 
         //validateDateWithRules()
@@ -373,6 +426,8 @@ class UserViewModel (
 
     //var emailId: MutableLiveData<String> = MutableLiveData()
     var emailId: String? = null
+    var language: String? = null
+    var theme: String? = null
 //    var firstName: String = ""
 //    var lastName: String = ""
     fun getUserData(){
@@ -382,6 +437,9 @@ class UserViewModel (
 //            val lastNameKey = _state.value.currentUser
             Log.d(TAG, "emailKey= $emailKey")
             emailId = dao.getEmail(emailKey)
+
+            language = dao.getLanguage(emailKey)
+            theme = dao.getTheme(emailKey)
 //            firstName = dao.getFirstName(firstNameKey)
 //            lastName = dao.getLastName(lastNameKey)
             //onEvent(UserEvent.GetEmail(emailKey))

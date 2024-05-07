@@ -14,6 +14,8 @@ sealed class Screen {
 
     data object FavoriteRoomScreen : Screen()
 
+    data object SettingsScreen : Screen()
+
     data object TermsAndConditionsScreen : Screen()
     class RoomScreen(val room: Room) : Screen()
 

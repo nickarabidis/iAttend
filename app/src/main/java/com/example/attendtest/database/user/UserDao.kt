@@ -3,7 +3,9 @@ package com.example.attendtest.database.user
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
+import androidx.room.Update
 import androidx.room.Upsert
+import com.example.attendtest.database.userSettings.UserSettings
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -11,6 +13,9 @@ interface UserDao {
 
     @Upsert
     suspend fun upsertUser(user: User)
+
+    @Upsert
+    suspend fun upsertUserSettings(userSettings: UserSettings)
 
     @Delete
     suspend fun deleteUser(user: User)
@@ -38,4 +43,16 @@ interface UserDao {
 
     @Query("SELECT * FROM user ORDER BY password ASC")
     fun getUsersOrderedByPassword(): Flow<List<User>>
+
+    @Query("UPDATE UserSettings SET language = :lang WHERE userEmail = :email")
+    suspend fun updateLanguage(email: String, lang: String)
+
+    @Query("UPDATE UserSettings SET theme = :theme WHERE userEmail = :email")
+    suspend fun updateTheme(email: String, theme: String)
+
+    @Query("SELECT language FROM UserSettings WHERE userEmail = :email")
+    fun getLanguage(email: String): String
+
+    @Query("SELECT theme FROM UserSettings WHERE userEmail = :email")
+    fun getTheme(email: String): String
 }

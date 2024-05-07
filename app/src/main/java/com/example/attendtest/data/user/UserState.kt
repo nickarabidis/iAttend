@@ -2,10 +2,16 @@ package com.example.attendtest.data.user
 
 import com.example.attendtest.database.user.User
 import com.example.attendtest.database.user.userSortType
+import com.example.attendtest.database.userSettings.Languages
+import com.example.attendtest.database.userSettings.Themes
+import com.example.attendtest.database.userSettings.UserSettingsType
 
 
 data class UserState (
     val users: List<User> = emptyList(),
+//    val settings: List<UserSettingsType> = emptyList(),
+    var languageChosen: Languages = Languages.EN,
+    var themeChosen: Themes = Themes.LIGHT,
     val firstName: String = "",
     val lastName: String = "",
     val email: String = "",

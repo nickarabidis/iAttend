@@ -6,10 +6,15 @@ import com.example.attendtest.database.room.RoomVisibilityType
 import com.example.attendtest.database.roomAndFavorites.RoomAndFavorites
 import com.example.attendtest.database.roomAndUser.RoomAndUser
 import com.example.attendtest.database.roomAndUser.RoomAndUserSortType
+import com.example.attendtest.database.userSettings.Languages
+import com.example.attendtest.database.userSettings.Themes
+import com.example.attendtest.database.userSettings.UserSettings
 import java.util.Date
 
 
 data class RoomState(
+    var languageChosen: Languages = Languages.EN,
+    var themeChosen: Themes = Themes.LIGHT,
     val rooms: List<Room> = emptyList(),
     val roomName: String = "",
     val password: String = "",
@@ -19,6 +24,7 @@ data class RoomState(
     val isAddingRoom: Boolean = false,
     val isEditingRoom: Boolean = false,
     val currentRoom: Room? = null,
+    val currentSettings: UserSettings? = null,
     val sortType: RoomSortType = RoomSortType.ID,
     val isDone: Boolean = false,
 

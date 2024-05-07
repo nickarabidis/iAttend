@@ -3,9 +3,10 @@ package com.example.attendtest.data.room
 import com.example.attendtest.database.room.Room
 import com.example.attendtest.database.room.RoomSortType
 import com.example.attendtest.database.room.RoomVisibilityType
-import com.example.attendtest.database.roomAndFavorites.RoomAndFavorites
 import com.example.attendtest.database.roomAndUser.RoomAndUser
 import com.example.attendtest.database.roomAndUser.RoomAndUserSortType
+import com.example.attendtest.database.userSettings.Languages
+import com.example.attendtest.database.userSettings.Themes
 
 
 sealed interface RoomEvent {
@@ -70,6 +71,14 @@ sealed interface RoomEvent {
     data object HideAddUserInRoomDialog: RoomEvent
 
     data class SortRooms(val sortType: RoomSortType): RoomEvent
+
+    data class SetLanguage(val language: Languages): RoomEvent
+
+    data class SetTheme(val theme: Themes): RoomEvent
+
+    data class UpdateLanguage(val userEmail: String, val language: Languages): RoomEvent
+
+    data class UpdateTheme(val userEmail: String, val theme: Themes): RoomEvent
 
     data class ToggleVisibility(val visibilityType: RoomVisibilityType): RoomEvent
 

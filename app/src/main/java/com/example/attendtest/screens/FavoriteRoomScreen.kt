@@ -116,7 +116,9 @@ fun FavoriteRoomScreen(state: RoomState,
                                 onEvent(RoomEvent.SortRooms(RoomSortType.ID))
                                 AppRouter.navigateTo(Screen.HomeNewScreen)
                             }
-                            // "Settings" -> TODO("Add settings screen for user")
+                            R.string.settings -> {
+                                AppRouter.navigateTo(Screen.SettingsScreen)
+                            }
                         }
                         Log.d("ComingHere", "inside_onNavigationItemClicked")
                         Log.d("ComingHere", "${it.itemId} ${it.titleResId}")
@@ -133,7 +135,7 @@ fun FavoriteRoomScreen(state: RoomState,
                 //snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                 topBar = {
                     AppToolbar(
-                        toolbarTitle = "Favorites",
+                        toolbarTitle = stringResource(id = R.string.favorites),
                         logoutButtonClicked = {
                             userNewViewModel.logoutDatabase()
                         },

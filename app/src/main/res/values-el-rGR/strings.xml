@@ -62,4 +62,13 @@
     <string name="privacy_policy">Πολιτική Απορρήτου</string>
     <string name="and">" και τους "</string>
     <string name="terms_of_use">Όρους Χρήσης</string>
+    <string name="settings_language_desc">Αλλάζει την γλώσσα της εφαρμογής</string>
+    <string name="settings_theme_desc">Αλλάζει το θέμα της εφαρμογής</string>
+    <string name="setting_desc">Περιγραφή</string>
+    <string name="setting_language">Γλώσσα</string>
+    <string name="setting_theme">Θέμα</string>
+    <string name="gr">Ελληνικά</string>
+    <string name="en">Αγγλικά</string>
+    <string name="light">Φωτεινό</string>
+    <string name="dark">Σκούρο</string>
 </resources>
