@@ -102,7 +102,7 @@ class UserViewModel (
                     isAddingUser = false,
                     firstName = "",
                     lastName = "",
-                    email = "",
+                    //email = "",
                     password = "",
                     currentUser = email
                 ) }
@@ -277,7 +277,7 @@ class UserViewModel (
 
     private fun createUserSettings(email: String, language: Languages, theme: Themes) {
         viewModelScope.launch {
-            onEvent(UserEvent.SetEmail(email))
+            //onEvent(UserEvent.SetEmail(email))
             onEvent(UserEvent.SetLanguage(language))
             onEvent(UserEvent.SetTheme(theme))
             onEvent(UserEvent.SaveSettings)

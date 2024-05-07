@@ -452,7 +452,7 @@ fun FavoriteAndUnfavoriteIcon(
     userEmail: String,
     room: Room
 ) {
-    val favorite = remember(userEmail) { mutableStateOf(false) }
+    val favorite = remember(userEmail) { mutableStateOf<Boolean?>(null) }
     var roomAndFavorite: RoomAndFavorites? = null
     val scope = rememberCoroutineScope()
 
@@ -464,10 +464,10 @@ fun FavoriteAndUnfavoriteIcon(
 
     IconButton(onClick = {
         scope.launch {
-            if (!favorite.value) {
-                viewModel.favoriteRoom(userEmail, room)
-            } else {
+            if (favorite.value == true) {
                 viewModel.unfavoriteRoom(userEmail, room)
+            } else {
+                viewModel.favoriteRoom(userEmail, room)
             }
             // After the event, update the favorite value
             val fetchedIsFavorite = viewModel.getIsFavorite(userEmail, room.id)
@@ -490,6 +490,7 @@ fun FavoriteAndUnfavoriteIcon(
         }
     }
 }
+
 
 @Composable
 fun LanguageButton(
