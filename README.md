@@ -44,3 +44,4 @@ Favorites Screen:
 ## Licence
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+Released under the [MIT](https://github.com/nickarabidis/iAttend/blob/master/LICENSE) License.
